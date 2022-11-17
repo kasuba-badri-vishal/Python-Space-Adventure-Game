@@ -7,165 +7,146 @@ from pygame import mixer
 import numpy as np
 from pygame.locals import HWSURFACE, DOUBLEBUF, RESIZABLE
 from config import *
+from player import *
+from utils import *
 
-
-# Declaration of Size of the Window and No. of frames per second
-WIDTH = 1200 #1920
-HEIGHT = 600 #1080
-FPS = 60
 
 # Current state of the Game
 GAME_STATE = "start"
 
 
+def multi_player_game(CANVAS, clock, game_bg):
+
+    # # BACKGROUND MUSIC
+    mixer.music.load(os.path.join(AUDIO,"multigame.mp3"))
+    mixer.music.play(-1)
+
+    clock = pygame.time.Clock()
+
+    # INITIALIZE PLAYER
+    multi_player1 = Player(xpos=10, ypos=30, imagepath=os.path.join(PLAYER_IMAGES,'multi_player1.png'), multiplayer=1)
+    multi_player2 = Player(xpos=7*WIDTH/8, ypos=HEIGHT/2, imagepath=os.path.join(PLAYER_IMAGES,'multi_player2.png'), multiplayer=2)
 
 
+    font1 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), 40)
+    line1 = font1.render("Don't Mess with the Fire", False, (255, 255, 255))
+    line2 = font1.render('When Fire fires the fire', False, (255, 255, 255))
+    line3 = font1.render('Fire will be fired,', False, (255, 255, 255))
+    line4 = font1.render('I AM THE FIRE!!!!!!,', False, (255, 255, 255))
+    line5 = font1.render("Nobody is Softer than me!", False, (255, 255, 255))
+    line6 = font1.render('Nobody is Fiercer than me!', False, (255, 255, 255))
+    line7 = font1.render('Nobody is Flexible than me!,', False, (255, 255, 255))
+    line8 = font1.render('And Nobody can win against me!!,', False, (255, 255, 255))
+    line9 = font1.render('Game is about to Start!!!!!,', False, (255, 255, 255))
+    line10 = font1.render('Get Ready!!!!,', False, (255, 255, 255))
 
-class Player:
-    def __init__(self, xpos, ypos, imagepath):
-        self.xpos = xpos
-        self.ypos = ypos
-        self.health = 10
-        self.poweredup = False
-        self.surface = pygame.image.load(imagepath).convert_alpha()
+    # INITIALIZE BULLET LIST
+    bull_arr_player1 = []
+    bull_arr_player2 = []
 
-    def move(self, direction):
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "end"
 
-        if direction == 'l':
-            if self.xpos > 0:
-                self.xpos -= 20
-        elif direction == 'r':
-            if self.xpos < WIDTH - 20:
-                print(self.xpos)
-                self.xpos += 20
-        elif direction == 'u':
-            if self.ypos > 0:
-                self.ypos -= 20
-        elif direction == 'd':
-            if self.ypos < HEIGHT - 50:
-                self.ypos += 20
-
-    def display(self, screen):
-        screen.blit(self.surface, (self.xpos, self.ypos))
+            if(event.type == pygame.KEYDOWN):
+                if(event.key == pygame.K_ESCAPE):
+                    return "end"
+                if event.key == pygame.K_SPACE:
+                    bullet = Bullet(xpos=multi_player2.xpos - 20, ypos=multi_player2.ypos + 25, imagepath=os.path.join(BULLET_IMAGES,'bullet1.png'))
+                    bull_arr_player2.append(bullet)
+                if event.key == pygame.K_e:
+                    bullet = Bullet(xpos=multi_player1.xpos + 20, ypos=multi_player1.ypos + 25, imagepath=os.path.join(BULLET_IMAGES,'bullet1.png'))
+                    bull_arr_player1.append(bullet)
+                if event.key == pygame.K_z:
+                    multi_player1.got_hurt()
+                if event.key == pygame.K_m:
+                    multi_player2.got_hurt()
+                
 
 
-class Bullet:
-    def __init__(self, xpos, ypos, imagepath):
-        self.xpos = xpos
-        self.ypos = ypos
-        self.isactive = True
-        self.surface = pygame.image.load(imagepath).convert_alpha()
+        tick = pygame.time.get_ticks()
+        
+        CANVAS.blit(game_bg, (0, 0))
+        if(tick<4000):
+            CANVAS.blit(line9, ((400, HEIGHT / 10)))
+            CANVAS.blit(line10, ((400, HEIGHT / 10 + 100)))
+        if tick > 4000 and tick < 20000:
+            multi_player2.display(screen=CANVAS)
+            CANVAS.blit(line1, ((WIDTH/4, HEIGHT / 10)))
+            CANVAS.blit(line2, ((WIDTH/4, HEIGHT / 10 + 100)))
+            CANVAS.blit(line3, ((WIDTH/4, HEIGHT / 10 + 200)))
+            CANVAS.blit(line4, ((WIDTH/4, HEIGHT / 10 + 300)))
+        elif tick > 20000 and tick < 36000:
+            multi_player1.display(screen=CANVAS)
+            CANVAS.blit(line5, ((WIDTH/8, HEIGHT / 10)))
+            CANVAS.blit(line6, ((WIDTH/8, HEIGHT / 10 + 100)))
+            CANVAS.blit(line7, ((WIDTH/8, HEIGHT / 10 + 200)))
+            CANVAS.blit(line8, ((WIDTH/8, HEIGHT / 10 + 300)))
+        elif tick > 36000:
+            multi_player1.display(screen=CANVAS)
+            multi_player2.display(screen=CANVAS)
 
-    def move(self, direction):
-        if direction == 'u':
-            if self.ypos > 0:
-                self.ypos -= 10
+        pygame.draw.rect(CANVAS,(255,0,0),(10,10, 290 + multi_player1.health,25))
+        pygame.draw.rect(CANVAS,(255,255,255),(10,10,300,25),4)
+
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            multi_player2.move(direction='l')
+        elif keys[pygame.K_RIGHT]:
+            multi_player2.move(direction='r')
+        elif keys[pygame.K_UP]:
+            multi_player2.move(direction='u')
+        elif keys[pygame.K_DOWN]:
+            multi_player2.move(direction='d')
+
+
+        pygame.draw.rect(CANVAS,(255,0,0),(WIDTH - 310,10, 290 + multi_player2.health,25))
+        pygame.draw.rect(CANVAS,(255,255,255),( WIDTH - 310,10, 300,25),4)
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            multi_player1.move(direction='l')
+        elif keys[pygame.K_d]:
+            multi_player1.move(direction='r')
+        elif keys[pygame.K_w]:
+            multi_player1.move(direction='u')
+        elif keys[pygame.K_s]:
+            multi_player1.move(direction='d')
+
+
+        for bullet in bull_arr_player1:
+            bullet.move(direction='r')
+
+            if bullet.isactive == False:
+                bull_arr_player1.remove(bullet)
             else:
-                self.isactive = False
-        elif direction == 'd':
-            if self.ypos < HEIGHT - 10:
-                self.ypos += 10
+                bullet.display(screen=CANVAS)
+        
+        for bullet in bull_arr_player2:
+            bullet.move(direction='l')
+
+            if bullet.isactive == False:
+                bull_arr_player2.remove(bullet)
             else:
-                self.isactive = False
+                bullet.display(screen=CANVAS)
 
-    def display(self, screen):
-        screen.blit(self.surface, (self.xpos, self.ypos))
+        if(len(bull_arr_player1)):
+            for b in bull_arr_player1:
+                if(abs(b.xpos - multi_player2.xpos) < 50) and (abs(b.ypos - multi_player2.ypos) < 50):
+                    multi_player2.got_hurt()
+                    bull_arr_player1.remove(b)
 
-
-class Enemy1:
-    def __init__(self, xpos, ypos, imagepath1, imagepath2, imagepath3):
-        self.xpos = xpos
-        self.ypos = ypos
-        self.isalive = True
-        self.surface1 = pygame.image.load(imagepath1).convert_alpha()
-        self.surface2 = pygame.image.load(imagepath2).convert_alpha()
-        self.surface3 = pygame.image.load(imagepath3).convert_alpha()
-        # self.rect = self.surface.get_rect(center=(self.xpos, self.ypos))
-        self.life = 3
-
-    def move(self):
-        if self.ypos < HEIGHT - 20:
-            self.ypos += .25
-        else:
-            self.isalive = False
-
-    def display(self, screen):
-        if self.life == 3:
-            screen.blit(self.surface1, (self.xpos, self.ypos))
-        elif self.life == 2:
-            screen.blit(self.surface2, (self.xpos, self.ypos))
-        elif self.life == 1:
-            screen.blit(self.surface3, (self.xpos, self.ypos))
-
-    # def explode(self):
+        if(len(bull_arr_player2)):
+            for b in bull_arr_player2:
+                if(abs(b.xpos - multi_player1.xpos) < 50) and (abs(b.ypos - multi_player1.ypos) < 50):
+                    multi_player1.got_hurt()
+                    bull_arr_player2.remove(b)
 
 
-class Enemy2:
-    def __init__(self, xpos, ypos, imagepath1, imagepath2, imagepath3, imagepath4, imagepath5):
-        self.xpos = xpos
-        self.ypos = ypos
-        self.isalive = True
-        self.surface1 = pygame.image.load(imagepath1).convert_alpha()
-
-        self.surface2 = pygame.image.load(imagepath2).convert_alpha()
-        self.surface3 = pygame.image.load(imagepath3).convert_alpha()
-
-        self.surface4 = pygame.image.load(imagepath4).convert_alpha()
-
-        self.surface5 = pygame.image.load(imagepath5).convert_alpha()
-        # self.rect = self.surface.get_rect(center=(self.xpos, self.ypos))
-        self.life = 30
-
-    def move(self):
-        if self.ypos < HEIGHT - 20:
-            self.ypos += .25
-        else:
-            self.isalive = False
-
-    def display(self, screen):
-        if self.life >= 25:
-            screen.blit(self.surface1, (self.xpos, self.ypos))
-        elif self.life >= 20:
-            screen.blit(self.surface2, (self.xpos, self.ypos))
-        elif self.life >= 15:
-            screen.blit(self.surface3, (self.xpos, self.ypos))
-        elif self.life >= 10:
-            screen.blit(self.surface4, (self.xpos, self.ypos))
-        else:
-            screen.blit(self.surface5, (self.xpos, self.ypos))
-
-    # def explode(self):
-
-
-class Enemy3:
-    def __init__(self, xpos, ypos, imagepath1, imagepath2, imagepath3, imagepath4):
-        self.xpos = xpos
-        self.ypos = ypos
-        self.isalive = True
-        self.surface1 = pygame.image.load(imagepath1).convert_alpha()
-        self.surface2 = pygame.image.load(imagepath2).convert_alpha()
-        self.surface3 = pygame.image.load(imagepath3).convert_alpha()
-        self.surface4 = pygame.image.load(imagepath4).convert_alpha()
-
-        self.life = 100
-
-    def move(self):
-        if self.ypos < HEIGHT - 20:
-            self.ypos += .01
-        else:
-            self.isalive = False
-
-    def display(self, screen):
-        if self.life >= 75:
-            screen.blit(self.surface1, (self.xpos, self.ypos))
-        elif self.life >= 50:
-            screen.blit(self.surface2, (self.xpos, self.ypos))
-        elif self.life >= 25:
-            screen.blit(self.surface3, (self.xpos, self.ypos))
-        else:
-            screen.blit(self.surface4, (self.xpos, self.ypos))
-
-    # def explode(self):
+        pygame.display.update()  # To refresh every time while loop runs
+        clock.tick(60)  # To run update 60 frames in 1 second
 
 
 def single_player_game(CANVAS, clock, game_bg):
@@ -180,7 +161,7 @@ def single_player_game(CANVAS, clock, game_bg):
     mixer.music.play(-1)
 
     # INITIALIZE PLAYER
-    player1 = Player(xpos=WIDTH/2, ypos=HEIGHT/8, imagepath=os.path.join(PLAYER_IMAGES,'player1.png'))
+    player1 = Player(xpos=WIDTH/2, ypos=HEIGHT/8, imagepath=os.path.join(PLAYER_IMAGES,'player1.png'), multiplayer=0)
 
     # INITIALIZE BULLET LIST
     bull_arr = []
@@ -380,13 +361,7 @@ def single_player_game(CANVAS, clock, game_bg):
         clock.tick(60)  # To run update 60 frames in 1 second
 
 
-def multi_player_game(CANVAS, clock, game_bg):
-    # BACKGROUND MUSIC
-    mixer.music.load(os.path.join(AUDIO,"vikram.ogg"))
-    mixer.music.play(-1)
 
-    # INITIALIZE PLAYER
-    player1 = Player(xpos=WIDTH/2, ypos=HEIGHT/8, imagepath=os.path.join(PLAYER_IMAGES,'player1.png'))
 
 def start_game(CANVAS, clock, start_bg):
 
@@ -416,11 +391,13 @@ def start_game(CANVAS, clock, start_bg):
 
     while(True):
 
-                # To Close the window
+        # To Close the window
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
-                pygame.quit()
-                exit()
+                exit_game()     
+            elif(event.type == pygame.KEYDOWN):
+                if(event.key == pygame.K_ESCAPE):
+                    exit_game()
 
         CANVAS.blit(start_bg, (0, 0))
         CANVAS.blit(line1, (100, 50))
@@ -525,6 +502,7 @@ def main():
         if(GAME_STATE == "start"):
             GAME_STATE = start_game(CANVAS, clock, start_bg)
         elif(GAME_STATE == "end"):
+            end_game()
             GAME_STATE = end_game(CANVAS,clock, start_bg)
         elif(GAME_STATE == "single_player"):
             GAME_STATE = single_player_game(CANVAS, clock, game_bg)
@@ -532,7 +510,6 @@ def main():
             GAME_STATE = multi_player_game(CANVAS, clock, game_bg)
         # print(GAME_STATE)
 
-    
 
 
 if __name__ == "__main__":
