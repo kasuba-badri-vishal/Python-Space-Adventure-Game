@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    #myvideo {
+      border: 0.5px solid crimson;
+      display: flow-root;
+      margin: auto;
+      border-radius: 25px;
+    }
+    #mainPageHeading{
+      color: brown;
+      text-align: center;
+      padding-top: 15px;
+    }
+    #contact-me{
+      color: aliceblue;
+    }
+  </style>
+
+  <title>Home</title>
+</head>
+
+<body>
+
+  <script id="replace_with_navbar" src="script.js"></script>
+
+  <h1 id="mainPageHeading" style="padding-top: 3%; text-align: center;"><b>Hi Everyone, Welcome to my Page. &#128512;</b> </h1>
+
+  <div class="main">
+    <div class="MyInformation">
+      <div class="slider">
+        <div class="slides">
+          <input type="radio" name="radio-btn" id="radio1">
+          <input type="radio" name="radio-btn" id="radio2">
+          <input type="radio" name="radio-btn" id="radio3">
+          <input type="radio" name="radio-btn" id="radio4">
+
+          <div class="slide first">
+            <img id="myimage" title="Badri" src="./resources/Badri_Image.jpg" alt="Badri Image">
+          </div>
+          <div class="slide">
+            <img id="myimage" title="Badri" src="./resources/Group_Photo.jpg" alt="Badri Image">
+          </div>
+          <div class="slide">
+            <img id="myimage" title="Badri" src="./resources/Badri_2.jpg" alt="Badri Image">
+          </div>
+          <div class="slide">
+            <img id="myimage" title="Badri" src="./resources/Badri_3.jpeg" alt="Badri Image">
+          </div>
+
+          <div class="selfMoving">
+            <div class="selfCheckingBTN1"></div>
+            <div class="selfCheckingBTN2"></div>
+            <div class="selfCheckingBTN3"></div>
+            <div class="selfCheckingBTN4"></div>
+          </div>
+
+        </div>
+
+        <div class="manualMoving">
+          <label for="radio1" class="CheckingBTN"></label>
+          <label for="radio2" class="CheckingBTN"></label>
+          <label for="radio3" class="CheckingBTN"></label>
+          <label for="radio4" class="CheckingBTN"></label>
+        </div>
+
+        <script type="text/javascript">
+            var counter = 1;
+            setInterval(function(){
+              document.getElementById('radio'+counter).checked = true;
+              counter++;
+              if(counter>4) {
+                counter=1;
+              }
+            }, 5000)
+          </script>
+      </div>
+    </div>
+    <div class="MyInformation2">
+      <h3 style="padding-top:15px; color: rgb(110, 33, 5);">Little Intro about me &#128516;</h3>
+      <p id="desc" style="font-size:11pt; padding: 10px 20px 20px 20px; font-weight: 500;  word-spacing: 4px;"> Myself Badri Vishal Kasuba, you can call me Badri &#128513; I am from Hyderabad. Yes,Biryani is famous there &#128514; Currently, I am enrolled here in MS RAP program under respected Professor. Ganesh Ramakrishnan&#9997; I have graduated from BITS-Pilani, Hyderabad Campus in 2021 with Computer Science major&#127891; and I am highly interested in Data Science domain&#128218;.  In my free time, I like to play Outdoor games&#127951;, watch movies&#127909; and catching up with the things happening around the world&#128526;. I do speak Telugu, Hindi and English. I am enthusiast in learning languages&#126980; Also I have visited some of the major places in India and looking forward to explore more along with you all&#128515; I am really eager to make friends with you all and always waiting to hear from you. you can also check this video out to know me better&#127773;&#127770; Thanks&#128522;</p>
+    </div>
+  </div>
+
+
+  <h1 id="mainPageHeading" style="padding-bottom: 10px;text-align: center;"><b>Video Describing Myself &#128514;</b> </h1>
+  <video id="myvideo" width="600" height="350" controls>
+    <source src="./resources/myvideo.mp4" type="video/mp4">
+    Browser is not supporting this video.
+  </video>
+
+  <div class="contact-me">
+    <h1 id="mainPageHeading"><b>Contact Me!!! &#128516;</b> </h1>
+    <div id="contact-me"> <a target=”_blank” href="https://www.facebook.com/badri.vishal.921" class="fa fa-facebook"></a> </div>
+    <div id="contact-me"> <a target=”_blank” href="https://www.instagram.com/kasubabadri/" class="fa fa-instagram"></a> </div>
+    <div id="contact-me"> <a target=”_blank” href="https://github.com/kasuba-badri-vishal" class="fa fa-github"></a> </div>
+    <div id="contact-me"> <a target=”_blank” href="https://www.linkedin.com/in/badri1999/" class="fa fa-linkedin"></a> </div>
+    <div id="contact-me"> <a target=”_blank” href="https://web.whatsapp.com/" class="fa fa-whatsapp"></a> </div>
+    <div id="contact-me"> <a target=”_blank” href="https://twitter.com/Badrivi01069404" class="fa fa-twitter"></a> </div>
+  </div>
+
+</body>
+
+</html>
