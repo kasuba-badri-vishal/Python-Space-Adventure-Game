@@ -104,6 +104,11 @@ def multi_player_game(CANVAS, clock, game_bg):
 
         pygame.draw.rect(CANVAS,(255,0,0),(WIDTH - 310,10, 290 + multi_player2.health,25))
         pygame.draw.rect(CANVAS,(255,255,255),( WIDTH - 310,10, 300,25),4)
+        
+        if(multi_player1.health < -300):
+            return "player2"
+        elif(multi_player2.health < -300):
+            return "player1"
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -436,43 +441,55 @@ def start_game(CANVAS, clock, start_bg):
         clock.tick(60)  # To run update 60 frames in 1 second
 
 
-def end_game(CANVAS, clock, start_bg):
+def end_game(CANVAS, clock, start_bg, won=None):
 
 
     # TITLE OF THE GAME
-    font = pygame.font.Font('fonts/space-age/space age.ttf', 100)
+    font = pygame.font.Font(os.path.join(FONTS,'space-age/space age.ttf'), 100)
     line1 = font.render('    GAME  ', False, (255, 232, 31))
     line2 = font.render('OVER', False, (255, 232, 31))
+
+    if(won!=None):
+        line3 = font.render(won, False, (255, 232, 31))
 
     # BACKGROUND MUSIC
     mixer.music.load(os.path.join(AUDIO,"rain.mp3"))
     mixer.music.play(-1)
 
     # SINGLE PLAYER BUTTON
-    astro1 = pygame.image.load('images/astro1.png').convert_alpha()
-    astro1enl = pygame.image.load('images/astro1enlarged.png').convert_alpha()
+    astro1 = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1.png')).convert_alpha()
+    astro1enl = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1enlarged.png')).convert_alpha()
     astro1_rect = astro1.get_rect(topleft=(WIDTH / 4, HEIGHT / 3.2))
 
-    astro2 = pygame.image.load('images/astro2.png').convert_alpha()
-    astro2enl = pygame.image.load('images/astro2enlarged.png').convert_alpha()
-    astro2_rect = astro2.get_rect(topleft=(WIDTH / 4 - 40, HEIGHT / 2))
 
-    # MULTIPLAYER BUTTON
-    font2 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), int(120*HEIGHT/1020))
-    line3 = font2.render('  SINGLE PLAYER', False, (255, 255, 255))
-    line4 = font2.render('  MULTI PLAYER', False, (255, 255, 255))
 
     gameoverRunning = True
     while gameoverRunning:
 
-        # To Close the window
+                # To Close the window
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                gameoverRunning = False
+            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
+                exit_game()     
+            elif(event.type == pygame.KEYDOWN):
+                if(event.key == pygame.K_ESCAPE):
+                    exit_game()
 
         CANVAS.blit(start_bg, (0, 0))
         CANVAS.blit(line1, (400, 50))
         CANVAS.blit(line2, (400, 150))
+        CANVAS.blit(line3, (400, 250))
+
+        mouse_coordinates = pygame.mouse.get_pos()
+        if astro1_rect.collidepoint(mouse_coordinates):
+            CANVAS.blit(astro1, astro1_rect)
+
+            click = pygame.mouse.get_pressed()
+            if click[0]:
+                #startRunning = False
+                state = 'start'
+                return state
+        else:
+            CANVAS.blit(astro1, astro1_rect)
 
 
         pygame.display.update()  # To refresh every time while loop runs
@@ -483,7 +500,9 @@ def end_game(CANVAS, clock, start_bg):
 
 
 
+"""
 
+"""
 def main():
 
     GAME_STATE = "start"
@@ -497,22 +516,27 @@ def main():
 
     start_bg = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "start.jpg")).convert()
     game_bg  = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "stars.jpg")).convert()
+    end_bg  = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "end.png")).convert()
 
     while(True):
         if(GAME_STATE == "start"):
+            print("heelo")
             GAME_STATE = start_game(CANVAS, clock, start_bg)
         elif(GAME_STATE == "end"):
-            end_game()
-            GAME_STATE = end_game(CANVAS,clock, start_bg)
+            GAME_STATE = end_game(CANVAS,clock, end_bg)
         elif(GAME_STATE == "single_player"):
             GAME_STATE = single_player_game(CANVAS, clock, game_bg)
         elif(GAME_STATE == "multi_player"):
-            GAME_STATE = multi_player_game(CANVAS, clock, game_bg)
-        # print(GAME_STATE)
+            player = multi_player_game(CANVAS, clock, game_bg)
+            GAME_STATE = end_game(CANVAS,clock, end_bg, won=player)
+            print(GAME_STATE)
 
 
 
 if __name__ == "__main__":
+    """
+    Main Function is executed here
+    """
     main()
 
 
