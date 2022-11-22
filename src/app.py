@@ -5,17 +5,29 @@ from flask import Flask, render_template
 #logging basic configuration
 # lg.basicConfig(filename="log.txt",level=lg.DEBUG)
 
-app = Flask(__name__, template_folder='template')
+app = Flask(__name__, static_url_path='', static_folder='web/static', template_folder='web/templates')
 app.config["DEBUG"] = True
 
 
 @app.route('/',methods=['GET', 'POST'])
 def index():
     return render_template('home.html')
+
+@app.route('/about',methods=['GET', 'POST'])
+def about_game():
+    return render_template('about.html')
            
-@app.route('/game/',methods=['GET', 'POST'])
-def perform_upload():
-    return render_template('game.html')
+@app.route('/rules',methods=['GET', 'POST'])
+def rules():
+    return render_template('rules.html')
+
+@app.route('/stats',methods=['GET', 'POST'])
+def game_stats():
+    return render_template('stats.html')
+           
+@app.route('/experience',methods=['GET', 'POST'])
+def feedback():
+    return render_template('feedback.html')
 
 
 
