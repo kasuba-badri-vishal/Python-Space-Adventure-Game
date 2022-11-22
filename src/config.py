@@ -1,5 +1,6 @@
 import os
 
+# Host and Port on which Web Application would be run
 HOST = "0.0.0.0"
 PORT = 5000
 
@@ -9,11 +10,20 @@ WIDTH = 1200 #1920
 HEIGHT = 600 #1080
 FPS = 60
 
+
+# Current state of the Game when game is initialized
+GAME_STATE = "start"
+
+
+# Variable that contains the details of who won the Game
 WON = None
 
+
+# Names of the Multi-Players that are being played
 PLAYER_NAMES = ['Aditya', 'Badri']
 
 
+# Path to the data that is used by the game
 IMAGES = "./data/images/"
 AUDIO  = "./data/audio/"
 FONTS  = "./data/fonts/"
@@ -24,3 +34,8 @@ ASTRONOMER_IMAGES = os.path.join(IMAGES,"astronomers")
 PLAYER_IMAGES = os.path.join(IMAGES,"players")
 BULLET_IMAGES = os.path.join(IMAGES,"bullets")
 ENEMY_IMAGES = os.path.join(IMAGES,"enemy")
+
+
+#Font type for the Details that are shown on the Pygame
+ALBA_FONT  = os.path.join(FONTS, 'alba/ALBAS___.TTF')
+SPACE_FONT = os.path.join(FONTS, 'space-age/space age.ttf')

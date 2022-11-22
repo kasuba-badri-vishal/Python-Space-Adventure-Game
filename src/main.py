@@ -3,7 +3,7 @@
 '''
 import os
 import pygame
-from pygame import mixer
+import time
 import numpy as np
 from pygame.locals import HWSURFACE, DOUBLEBUF, RESIZABLE
 from config import *
@@ -11,15 +11,13 @@ from player import *
 from utils import *
 
 
-# Current state of the Game
-GAME_STATE = "start"
 
 
-def multi_player_game(CANVAS, clock, game_bg):
+
+def multi_player_game(CANVAS, game_bg):
 
     # # BACKGROUND MUSIC
-    mixer.music.load(os.path.join(AUDIO,"multigame.mp3"))
-    mixer.music.play(-1)
+    background_music("multi_player.mp3")
 
     clock = pygame.time.Clock()
 
@@ -28,7 +26,7 @@ def multi_player_game(CANVAS, clock, game_bg):
     multi_player2 = Player(xpos=7*WIDTH/8, ypos=HEIGHT/2, imagepath=os.path.join(PLAYER_IMAGES,'multi_player2.png'), multiplayer=2)
 
 
-    font1 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), 40)
+    font1 = pygame.font.Font(ALBA_FONT, 40)
     line1 = font1.render("Don't Mess with the Fire", False, (255, 255, 255))
     line2 = font1.render('When Fire fires the fire', False, (255, 255, 255))
     line3 = font1.render('Fire will be fired,', False, (255, 255, 255))
@@ -56,7 +54,7 @@ def multi_player_game(CANVAS, clock, game_bg):
                     bullet = Bullet(xpos=multi_player2.xpos - 20, ypos=multi_player2.ypos + 25, imagepath=os.path.join(BULLET_IMAGES,'bullet1.png'))
                     bull_arr_player2.append(bullet)
                 if event.key == pygame.K_e:
-                    bullet = Bullet(xpos=multi_player1.xpos + 20, ypos=multi_player1.ypos + 25, imagepath=os.path.join(BULLET_IMAGES,'bullet1.png'))
+                    bullet = Bullet(xpos=multi_player1.xpos + 20, ypos=multi_player1.ypos + 25, imagepath=os.path.join(BULLET_IMAGES,'bullet2.png'))
                     bull_arr_player1.append(bullet)
                 if event.key == pygame.K_z:
                     multi_player1.got_hurt()
@@ -154,50 +152,97 @@ def multi_player_game(CANVAS, clock, game_bg):
         clock.tick(60)  # To run update 60 frames in 1 second
 
 
-def single_player_game(CANVAS, clock, game_bg):
+
+def single_player_game(CANVAS, bg_image):
+
+
+    clock = pygame.time.Clock()  # Initialize clock object
     count = 0
     phase = 'instructions'
     ctdcount = 0
 
-    clock = pygame.time.Clock()
-
     # BACKGROUND MUSIC
-    mixer.music.load(os.path.join(AUDIO,"vikram.ogg"))
-    mixer.music.play(-1)
+    background_music("single_player.ogg")
 
     # INITIALIZE PLAYER
-    player1 = Player(xpos=WIDTH/2, ypos=HEIGHT/8, imagepath=os.path.join(PLAYER_IMAGES,'player1.png'), multiplayer=0)
+    player1 = Player(xpos=WIDTH / 2, ypos=HEIGHT / 2, imagepath=os.path.join(PLAYER_IMAGES,'player1.png'), multiplayer=0)
 
     # INITIALIZE BULLET LIST
     bull_arr = []
+    bull_arr_enemy = []
     enemy_arr = []
+    enemy_arr2 = []
 
-    # Infested Earth
-    font1 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), 40)
-    line1 = font1.render('THE EARTH IS UNDER AN ALIEN ATTACK', False, (255, 255, 255))
-    line2 = font1.render(' YOU ARE OUR ONLY HOPE MAVERICK', False, (255, 255, 255))
-    line3 = font1.render('  DONT LET THEM REACH THE WALL', False, (255, 255, 255))
+    # GAPS
+    vert_gap = HEIGHT / 100  # Vertical Gap
+    hor_gap = WIDTH / 100  # Horizontal Gap
 
-    # Intro
-    font2 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), 40)
-    line4 = font2.render('GET READY', False, (255, 255, 255))
-    line5 = font2.render('USE ARROW KEYS TO MOVE', False, (255, 255, 255))
-    line6 = font2.render('USE SPACE TO FIRE', False, (255, 255, 255))
-    line7 = font2.render('USE CTRL ONCE YOUR POWER BAR IS FULL', False, (255, 255, 255))
+    # Greetings
+    font_size = int(WIDTH/8.0)
+    font1 = pygame.font.Font(ALBA_FONT, font_size)
+    line1 = font1.render('GREETINGS', False, (255, 255, 255))
+    line1_rect = line1.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 15 * vert_gap))
+    line2 = font1.render(' MAVERICK', False, (255, 255, 255))
+    line2_rect = line1.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 15 * vert_gap))
 
-    font3 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), 80)
-    three = font3.render('3', False, (255, 255, 255))
-    two = font3.render('2', False, (255, 255, 255))
-    one = font3.render('1', False, (255, 255, 255))
+    # This is your Captain
+    font_size = int(WIDTH / 14.0)
+    font1 = pygame.font.Font(ALBA_FONT, font_size)
+    line3 = font1.render('This is your Captain', False, (255, 255, 255))
+    line3_rect = line3.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 10 * vert_gap))
+    line4 = font1.render(' The Earth is under attak', False, (255, 255, 255))
+    line4_rect = line4.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 10 * vert_gap))
 
-    # PHASE : Enemy1
+    # Arrows
+    font_size = int(WIDTH / 15.0)
+    font1 = pygame.font.Font(ALBA_FONT, font_size)
+    line5 = font1.render('DEFEND EARTH', False, (255, 255, 255))
+    line5_rect = line5.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 10 * vert_gap))
+    line6 = font1.render('USE ARROW KEYS TO MOVE', False, (255, 255, 255))
+    line6_rect = line6.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 10 * vert_gap))
 
+    # FIRE
+    font_size = int(WIDTH / 15.0)
+    font1 = pygame.font.Font(ALBA_FONT, font_size)
+    line7 = font1.render('USE SPACEBAR TO SHOOT ', False, (255, 255, 255))
+    line7_rect = line7.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+
+    # HEALTH BAR
+    font_size = int(WIDTH / 15.0)
+    font1 = pygame.font.Font(ALBA_FONT, font_size)
+    line8 = font1.render('BE SAFE MAVERICK', False, (255, 255, 255))
+    line8_rect = line8.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 20 * vert_gap))
+    line9 = font1.render('Dont Let your ego write ', False, (255, 255, 255))
+    line9_rect = line9.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    line10 = font1.render('checks your body can\'t cash', False, (255, 255, 255))
+    line10_rect = line10.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 20 * vert_gap))
+
+    font_size = int(WIDTH /2.5)
+    font1 = pygame.font.Font(ALBA_FONT, font_size)
+    three = font1.render('3', False, (255, 255, 255))
+    three_rect = three.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    two = font1.render('2', False, (255, 255, 255))
+    two_rect = three.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    one = font1.render('1', False, (255, 255, 255))
+    one_rect = three.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+
+
+    start_time = pygame.time.get_ticks()
+
+    # PHASE : Enemy1 VARIABLES
     x = 40 + (WIDTH / 10) * np.arange(10)
-
     x = list(x)
+
+
     flag = 1
     timer = 0
-    layers = 0
+
+    enemy3_img = os.path.join(ENEMY_IMAGES,'enemy3/')
+
+    # PHASE : Enemy2 VARIABLES
+    enemy2flag = 0
+    flip = 100
+    enemybulletFlag = 0
 
     singleRunning = True
     while singleRunning:
@@ -208,86 +253,66 @@ def single_player_game(CANVAS, clock, game_bg):
                 singleRunning = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    bullet = Bullet(xpos=player1.xpos + 50, ypos=player1.ypos, imagepath=os.path.join(BULLET_IMAGES,'bullet1.png'))
+                    bullet = Bullet(xpos=player1.xpos + 50, ypos=player1.ypos, imagepath=os.path.join(BULLET_IMAGES, 'bullet1.png'))
                     bull_arr.append(bullet)
-                if event.key == pygame.K_q:
-                    for j in range(10):
-                        enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'alien.png'),
-                                    imagepath2=os.path.join(ENEMY_IMAGES,'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES,'alien3.png'))
-                        enemy_arr.append(enemy)
-                if event.key == pygame.K_w:
-                    x = 130 + ((WIDTH - 180) / 9) * np.arange(9)
-                    x = list(x)
-                    for j in range(9):
-                        enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'alien.png'),
-                                    imagepath2=os.path.join(ENEMY_IMAGES,'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES,'alien3.png'))
-                        enemy_arr.append(enemy)
-                if event.key == pygame.K_e:
-                    x = 130 + ((WIDTH - 180) / 4) * np.arange(4)
-                    x = list(x)
-                    for j in range(4):
-                        enemy = Enemy2(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'enemy2/sp1.png'),
-                                    imagepath2=os.path.join(ENEMY_IMAGES,'enemy2/sp2.png'), imagepath3=os.path.join(ENEMY_IMAGES,'enemy2/sp3.png'),
-                                    imagepath4=os.path.join(ENEMY_IMAGES,'enemy2/sp5.png'), imagepath5=os.path.join(ENEMY_IMAGES,'enemy2/sp4.png'))
-                        enemy_arr.append(enemy)
                 if event.key == pygame.K_t:
-                    enemy = Enemy3(xpos=((WIDTH-600)/ 2), ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'enemy3/fb1.png'),
-                                imagepath2=os.path.join(ENEMY_IMAGES,'enemy3/fb2.png'),
-                                imagepath3=os.path.join(ENEMY_IMAGES,'enemy3/fb3.png'), imagepath4=os.path.join(ENEMY_IMAGES,'enemy3/fb4.png'))
-                    enemy_arr.append(enemy)
+                    enemy = Enemy2(xpos=((WIDTH - 600) / 2), ypos=+100,
+                                   imagepath1=enemy3_img + 'fb1.png', imagepath2=enemy3_img + 'fb2.png',
+                                   imagepath3=enemy3_img + 'fb3.png', imagepath4=enemy3_img + 'fb4.png')
+                    enemy_arr2.append(enemy)
 
 
-        CANVAS.blit(game_bg, (0, 0))
+        CANVAS.blit(bg_image, (0, 0))
 
         click = pygame.mouse.get_pressed()
         if click[0]:
-            ticks = pygame.time.get_ticks()
-
+            ticks = pygame.time.get_ticks() - start_time
+        tick = pygame.time.get_ticks() - start_time
 
         if pygame.time.get_ticks() > 31400:
             if count == 0:
                 count = 1
-        tick = pygame.time.get_ticks()
+        tick = pygame.time.get_ticks() -start_time
 
-        if tick < 11600:
-            phase = 'infestedearth'
-        elif tick > 11600 and tick < 29000:
-            phase = 'instructions'
+
+        if tick>1400 and tick < 5500:
+            CANVAS.blit(line1, line1_rect)
+            CANVAS.blit(line2, line2_rect)
+        elif tick>6500 and tick <10000:
+            CANVAS.blit(line3, line3_rect)
+            CANVAS.blit(line4, line4_rect)
+        elif tick > 11550 and tick < 16150:
+            CANVAS.blit(line5, line5_rect)
+            CANVAS.blit(line6, line6_rect)
+        elif tick > 16150 and tick < 21300:
+            CANVAS.blit(line7, line7_rect)
+        elif tick > 21300 and tick < 29000:
+            CANVAS.blit(line8, line8_rect)
+            CANVAS.blit(line9, line9_rect)
+            CANVAS.blit(line10, line10_rect)
         elif tick > 29000 and tick < 31400:
-            phase = 'threetwoone'
-        elif tick > 31400:
-            phase = 'enemy1'
-        elif tick > 130300:
-            phase = 'enemy3'
-
-        if phase == 'infestedearth':
-            CANVAS.blit(line1, ((200, HEIGHT / 10)))
-            CANVAS.blit(line2, ((200, HEIGHT / 10 + 150)))
-            CANVAS.blit(line3, ((200, HEIGHT / 10 + 300)))
-
-
-        elif phase == 'instructions':
-            CANVAS.blit(line4, ((740, HEIGHT / 10)))
-            CANVAS.blit(line5, (400, HEIGHT / 10 + 150))
-            CANVAS.blit(line6, (600, HEIGHT / 10 + 300))
-            CANVAS.blit(line7, (140, HEIGHT / 10 + 450))
-        elif phase == 'threetwoone':
             if ctdcount < 50:
-                CANVAS.blit(three, (WIDTH / 2 - 50, HEIGHT / 5))
+                CANVAS.blit(three, three_rect)
                 ctdcount += 1
             elif ctdcount < 100:
-                CANVAS.blit(two, (WIDTH / 2 - 50, HEIGHT / 5))
+                CANVAS.blit(two, two_rect)
                 ctdcount += 1
             else:
-                CANVAS.blit(one, (WIDTH / 2 - 50, HEIGHT / 5))
-        elif phase == 'enemy1':
+                CANVAS.blit(one, one_rect)
+        elif tick > 31400 and tick<70545:
+            phase = 'enemy1'
+        elif tick > 70545:
+            phase = 'enemy2'
+
+
+        if phase == 'enemy1':
 
             if (flag == 1) or (timer > 620 and flag == 3):
                 x = 40 + (WIDTH / 10) * np.arange(10)
                 x = list(x)
                 for j in range(10):
-                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'alien.png'),
-                                imagepath2=os.path.join(ENEMY_IMAGES,'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES,'alien3.png'))
+                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien.png'),
+                                   imagepath2=os.path.join(ENEMY_IMAGES, 'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES, 'alien3.png'))
                     enemy_arr.append(enemy)
 
                 if flag == 1:
@@ -301,8 +326,8 @@ def single_player_game(CANVAS, clock, game_bg):
                 x = 130 + ((WIDTH - 180) / 9) * np.arange(9)
                 x = list(x)
                 for j in range(9):
-                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'alien.png'),
-                                imagepath2=os.path.join(ENEMY_IMAGES,'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES,'alien3.png'))
+                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien.png'),
+                                   imagepath2=os.path.join(ENEMY_IMAGES, 'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES, 'alien3.png'))
                     enemy_arr.append(enemy)
                 if flag == 2:
                     flag = 3
@@ -311,18 +336,17 @@ def single_player_game(CANVAS, clock, game_bg):
 
             timer += 1
 
-        elif phase == 'enemy3':
+        elif phase == 'enemy2':
 
+            if enemy2flag == 0:
+                enemy = Enemy2(xpos=((WIDTH - 600) / 2), ypos=+100,
+                               imagepath1=enemy3_img + 'fb1.png', imagepath2=enemy3_img + 'fb2.png',
+                               imagepath3=enemy3_img + 'fb3.png', imagepath4=enemy3_img + 'fb4.png')
+                enemy_arr2.append(enemy)
+                enemy2flag = 1
 
-            enemy = Enemy3(xpos=(WIDTH/2), ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES,'enemy3/fb1.png'),imagepath2=os.path.join(ENEMY_IMAGES,'enemy3/fb2.png'),
-                        imagepath3=os.path.join(ENEMY_IMAGES,'enemy3/fb3.png'), imagepath4=os.path.join(ENEMY_IMAGES,'enemy3/fb4.png'))
-            enemy_arr.append(enemy)
 
             ## Remove all the other enemies
-
-
-
-
 
         player1.display(screen=CANVAS)
 
@@ -346,8 +370,60 @@ def single_player_game(CANVAS, clock, game_bg):
             else:
                 bullet.display(screen=CANVAS)
 
+        for bullet in bull_arr_enemy:
+            bullet.move(direction='d')
+
+            if bullet.isactive == False:
+                bull_arr_enemy.remove(bullet)
+            else:
+                bullet.display(screen=CANVAS)
+
         for enemy in enemy_arr:
             enemy.move()
+            enemy.display(screen=CANVAS)
+
+        for enemy in enemy_arr2:
+
+            if enemy.life > 300:
+                enemy.move(direction='d')
+
+            elif enemy.life > 290:
+                # enemy.move(direction='l')
+
+                if flip < 0:
+                    enemy.move(direction='r')
+                    flip += 1
+                elif flip > 0:
+                    enemy.move(direction='l')
+                    flip -= 1
+                elif flip == 0:
+                    if np.random.binomial(1, .5) >= .5:
+                        flip = 100
+                    else:
+                        flip = -100
+
+            elif enemy.life > 100:
+
+                if enemybulletFlag == 0:
+                    bullet = Bullet(xpos=enemy.centerx, ypos=enemy.centery, imagepath=os.path.join(BULLET_IMAGES, 'bullet2.png'))
+                    bull_arr_enemy.append(bullet)
+                    enemybulletFlag = 1
+                    old_tick = pygame.time.get_ticks()
+                elif pygame.time.get_ticks() - old_tick > 1000:
+                    enemybulletFlag = 0
+
+                if flip < 0:
+                    enemy.move(direction='r')
+                    flip += 1
+                elif flip > 0:
+                    enemy.move(direction='l')
+                    flip -= 1
+                elif flip == 0:
+                    if np.random.binomial(1, .5) >= .5:
+                        flip = 100
+                    else:
+                        flip = -100
+
             enemy.display(screen=CANVAS)
 
         for b in bull_arr:
@@ -356,11 +432,49 @@ def single_player_game(CANVAS, clock, game_bg):
                     if abs(b.xpos - e.xpos) < 60:
                         if b.ypos - 50 < e.ypos:
                             e.life -= 1
-                            print(f"This is b.ypos {b.ypos}, e.ypos {e.ypos}")
                             if b in bull_arr:
                                 bull_arr.remove(b)
                             if (e.life == 0):
                                 enemy_arr.remove(e)
+            for e2 in enemy_arr2:
+                if len(bull_arr) > 0 and len(enemy_arr2) > 0:
+
+                    hcon1 = b.centerx + b.surface.get_width() / 2 > e2.centerx - e2.presentsurface.get_width() / 2 + 30
+                    hcon2 = b.centerx - b.surface.get_width() / 2 < e2.centerx + e2.presentsurface.get_width() / 2 - 30
+
+                    vcon1 = abs(b.centery - b.surface.get_height() / 2 - (e2.centery + e2.presentsurface.get_height() / 2)) < 5
+
+                    if hcon1 and hcon2 and vcon1:
+                        e2.life -= 1
+                        if b in bull_arr:
+                            bull_arr.remove(b)
+                        if (e2.life == 0):
+                            enemy_arr2.remove(e2)
+
+            # Collision of Enemy Bullets with Player Bullets
+            for enemyBulllet in bull_arr_enemy:
+
+                for playerBullet in bull_arr:
+                    r_diff = np.sqrt((enemyBulllet.centerx - playerBullet.centerx)**2 + (enemyBulllet.centery - playerBullet.centery)**2)
+                    if r_diff <50:
+                        if enemyBulllet in bull_arr_enemy:
+                            bull_arr_enemy.remove(enemyBulllet)
+                        if playerBullet in bull_arr:
+                            bull_arr.remove(playerBullet)
+
+        for enemyBulllet in bull_arr_enemy:
+
+            hcon1 = enemyBulllet.centerx + enemyBulllet.surface.get_width() / 2 > player1.centerx - player1.surface.get_width() / 2 + 30
+            hcon2 = enemyBulllet.centerx - enemyBulllet.surface.get_width() / 2 < player1.centerx + player1.surface.get_width() / 2 - 30
+            vcon1 = abs(enemyBulllet.centery + enemyBulllet.surface.get_height() / 2 - (
+                        player1.centery - player1.surface.get_height() / 2)) < 5
+
+            if hcon1 and hcon2 and vcon1:
+                player1.life -= 1
+                if enemyBulllet in bull_arr_enemy:
+                    bull_arr_enemy.remove(enemyBulllet)
+
+
 
         pygame.display.update()  # To refresh every time while loop runs
         clock.tick(60)  # To run update 60 frames in 1 second
@@ -368,17 +482,17 @@ def single_player_game(CANVAS, clock, game_bg):
 
 
 
-def start_game(CANVAS, clock, start_bg):
+def start_game(CANVAS, start_bg):
 
+    clock = pygame.time.Clock()
 
     # TITLE OF THE GAME
-    font = pygame.font.Font(os.path.join(FONTS,'space-age/space age.ttf'), 100)
+    font = pygame.font.Font(SPACE_FONT, 100)
     line1 = font.render('    SPACE  ', True, (255, 232, 31))
     line2 = font.render('ADVENTURE', False, (255, 232, 31))
 
     # BACKGROUND MUSIC
-    mixer.music.load(os.path.join(AUDIO,"rain.mp3"))
-    mixer.music.play(-1)
+    background_music("intro.mp3")
 
     # SINGLE PLAYER BUTTON
     astro1 = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1.png')).convert_alpha()
@@ -390,19 +504,14 @@ def start_game(CANVAS, clock, start_bg):
     astro2_rect = astro2.get_rect(topleft=((WIDTH / 4) - 40, HEIGHT / 2))
 
     # MULTIPLAYER BUTTON
-    font2 = pygame.font.Font(os.path.join(FONTS,'alba/ALBAS___.TTF'), int(120*HEIGHT/1020))
-    line3 = font2.render('  SINGLE PLAYER', False, (255, 255, 255))
-    line4 = font2.render('  MULTI PLAYER', False, (255, 255, 255))
+    font1 = pygame.font.Font(ALBA_FONT, int(120*HEIGHT/1020))
+    line3 = font1.render('  SINGLE PLAYER', False, (255, 255, 255))
+    line4 = font1.render('  MULTI PLAYER', False, (255, 255, 255))
 
     while(True):
 
         # To Close the window
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
-                exit_game()     
-            elif(event.type == pygame.KEYDOWN):
-                if(event.key == pygame.K_ESCAPE):
-                    exit_game()
+        check_window()
 
         CANVAS.blit(start_bg, (0, 0))
         CANVAS.blit(line1, (100, 50))
@@ -415,7 +524,6 @@ def start_game(CANVAS, clock, start_bg):
 
             click = pygame.mouse.get_pressed()
             if click[0]:
-                #startRunning = False
                 state = 'multi_player'
                 return state
 
@@ -426,7 +534,6 @@ def start_game(CANVAS, clock, start_bg):
 
             click = pygame.mouse.get_pressed()
             if click[0]:
-                #startRunning = False
                 state = 'single_player'
                 return state
 
@@ -441,55 +548,77 @@ def start_game(CANVAS, clock, start_bg):
         clock.tick(60)  # To run update 60 frames in 1 second
 
 
-def end_game(CANVAS, clock, start_bg, won=None, name=None):
 
+def end_game(CANVAS, start_bg, won=None, name=None):
 
-    # TITLE OF THE GAME
-    font = pygame.font.Font(os.path.join(FONTS,'space-age/space age.ttf'), 100)
+    clock = pygame.time.Clock()
+
+    # # TITLE OF THE PAGE
+    font = pygame.font.Font(SPACE_FONT, 100)
     line1 = font.render('    GAME  ', False, (255, 232, 31))
     line2 = font.render('OVER', False, (255, 232, 31))
 
     if(won!=None):
         line3 = font.render(str(won) + ": " + name + " Won!!!", False, (255, 232, 31))
 
+    
     # BACKGROUND MUSIC
-    mixer.music.load(os.path.join(AUDIO,"endgame.mp3"))
-    mixer.music.play(-1)
+    background_music("endgame.mp3")
+
 
     # SINGLE PLAYER BUTTON
     astro1 = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1.png')).convert_alpha()
     astro1enl = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1enlarged.png')).convert_alpha()
     astro1_rect = astro1.get_rect(topleft=(WIDTH / 4, HEIGHT / 3.2))
 
+    astro2 = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro2.png')).convert_alpha()
+    astro2enl = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro2enlarged.png')).convert_alpha()
+    astro2_rect = astro2.get_rect(topleft=((WIDTH / 4) - 40, HEIGHT / 2))
+
+    # MULTIPLAYER BUTTON
+    font1 = pygame.font.Font(ALBA_FONT, int(120*HEIGHT/1020))
+    line4 = font1.render('  Play Again', False, (255, 255, 255))
+    line5 = font1.render('  Exit Game', False, (255, 255, 255))
 
 
-    gameoverRunning = True
-    while gameoverRunning:
 
-                # To Close the window
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
-                exit_game()     
-            elif(event.type == pygame.KEYDOWN):
-                if(event.key == pygame.K_ESCAPE):
-                    exit_game()
+    while True:
+
+        check_window()
+
+
 
         CANVAS.blit(start_bg, (0, 0))
         CANVAS.blit(line1, (400, 50))
         CANVAS.blit(line2, (400, 150))
-        CANVAS.blit(line3, (400, 250))
-
+        if(won):
+            CANVAS.blit(line3, (400, 250))
+        
         mouse_coordinates = pygame.mouse.get_pos()
-        if astro1_rect.collidepoint(mouse_coordinates):
+        if astro2_rect.collidepoint(mouse_coordinates):
+            CANVAS.blit(astro2enl, astro2_rect)
             CANVAS.blit(astro1, astro1_rect)
 
             click = pygame.mouse.get_pressed()
             if click[0]:
-                #startRunning = False
-                state = 'start'
-                return state
+                return "close"
+
+        elif astro1_rect.collidepoint(mouse_coordinates):
+
+            CANVAS.blit(astro1enl, astro1_rect)
+            CANVAS.blit(astro2, astro2_rect)
+
+            click = pygame.mouse.get_pressed()
+            if click[0]:
+                time.sleep(3)
+                return "start"
+
         else:
+            CANVAS.blit(astro2, astro2_rect)
             CANVAS.blit(astro1, astro1_rect)
+
+        CANVAS.blit(line4, (WIDTH / 4 + 100, HEIGHT / 3.2))
+        CANVAS.blit(line5, (WIDTH / 4 + 150, HEIGHT / 2))
 
 
         pygame.display.update()  # To refresh every time while loop runs
@@ -501,42 +630,59 @@ def end_game(CANVAS, clock, start_bg, won=None, name=None):
 
 
 """
-
+* Main Function which initializes the Pygame. 
+* Some of the key arguments created here are as follows
+* * GAME_STATE := State of the Game at particular instance
+* * CANVAS     := Display details of the window that would be created of the pygame
+* Different phases of the GAME_STATE are as follows:-
+* * start         - Start of the Game
+* * end           - Ending the Game
+* * single_player - Starting the state of Single Player Game
+* * multi_player  - Starting the state of Multi Player Game
 """
 def main():
 
+    # Declaring the initial state of the pygame
     GAME_STATE = "start"
     
     # Initializing the Pygame and the Display Window
     pygame.init()
     CANVAS = pygame.display.set_mode((WIDTH, HEIGHT))
 
-    pygame.display.set_caption("ADVENTURE TIME")  # Name of the game
-    clock = pygame.time.Clock()
+    # Declaring the Name of the game
+    pygame.display.set_caption("ADVENTURE TIME") 
 
+    # Initializing the Background images for different stages of the Pygame
     start_bg = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "start.jpg")).convert()
     game_bg  = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "stars.jpg")).convert()
-    end_bg  = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "end.png")).convert()
+    end_bg  = pygame.image.load(os.path.join(BACKGROUND_IMAGES, "stars.jpg")).convert()
 
+
+
+    # A Continous loop in which game states are altered based on choices and different game modes are displayed and played
     while(True):
         if(GAME_STATE == "start"):
-            GAME_STATE = start_game(CANVAS, clock, start_bg)
+            GAME_STATE = start_game(CANVAS, start_bg)
         elif(GAME_STATE == "end"):
-            GAME_STATE = end_game(CANVAS,clock, end_bg)
+            GAME_STATE = end_game(CANVAS, end_bg)
         elif(GAME_STATE == "single_player"):
-            GAME_STATE = single_player_game(CANVAS, clock, game_bg)
+            GAME_STATE = single_player_game(CANVAS, game_bg)
         elif(GAME_STATE == "multi_player"):
-            player = multi_player_game(CANVAS, clock, game_bg)
+            player = multi_player_game(CANVAS, game_bg)
             update_stats(player)
-            GAME_STATE = end_game(CANVAS,clock, end_bg, won=player, name=PLAYER_NAMES[player-1])
-            print(GAME_STATE)
+            GAME_STATE = end_game(CANVAS, end_bg, won=player, name=PLAYER_NAMES[player-1])
+                        
+        else:
+            break
+
+    print("Thank you for playing the Game. It is over")
 
 
 
 if __name__ == "__main__":
     """
     Main Function is executed here
+    The Entire code logic is being run from here.
+    We call the Main function which initializes the Pygame
     """
     main()
-
-
