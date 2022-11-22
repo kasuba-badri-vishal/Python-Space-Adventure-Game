@@ -237,8 +237,6 @@ def single_player_game(CANVAS, bg_image):
     flag = 1
     timer = 0
 
-    enemy3_img = os.path.join(ENEMY_IMAGES,'enemy3/')
-
     # PHASE : Enemy2 VARIABLES
     enemy2flag = 0
     flip = 100
@@ -255,18 +253,11 @@ def single_player_game(CANVAS, bg_image):
                 if event.key == pygame.K_SPACE:
                     bullet = Bullet(xpos=player1.xpos + 50, ypos=player1.ypos, imagepath=os.path.join(BULLET_IMAGES, 'bullet1.png'))
                     bull_arr.append(bullet)
-                if event.key == pygame.K_t:
-                    enemy = Enemy2(xpos=((WIDTH - 600) / 2), ypos=+100,
-                                   imagepath1=enemy3_img + 'fb1.png', imagepath2=enemy3_img + 'fb2.png',
-                                   imagepath3=enemy3_img + 'fb3.png', imagepath4=enemy3_img + 'fb4.png')
-                    enemy_arr2.append(enemy)
 
 
         CANVAS.blit(bg_image, (0, 0))
 
-        click = pygame.mouse.get_pressed()
-        if click[0]:
-            ticks = pygame.time.get_ticks() - start_time
+
         tick = pygame.time.get_ticks() - start_time
 
         if pygame.time.get_ticks() > 31400:
@@ -311,7 +302,7 @@ def single_player_game(CANVAS, bg_image):
                 x = 40 + (WIDTH / 10) * np.arange(10)
                 x = list(x)
                 for j in range(10):
-                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien.png'),
+                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien1.png'),
                                    imagepath2=os.path.join(ENEMY_IMAGES, 'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES, 'alien3.png'))
                     enemy_arr.append(enemy)
 
@@ -319,14 +310,13 @@ def single_player_game(CANVAS, bg_image):
                     flag = 2
                 else:
                     flag = 4
-                # prevtimer=-1
 
             elif (timer > 310 and flag == 2) or (timer > 920 and flag == 4):
 
                 x = 130 + ((WIDTH - 180) / 9) * np.arange(9)
                 x = list(x)
                 for j in range(9):
-                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien.png'),
+                    enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien1.png'),
                                    imagepath2=os.path.join(ENEMY_IMAGES, 'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES, 'alien3.png'))
                     enemy_arr.append(enemy)
                 if flag == 2:
@@ -340,13 +330,11 @@ def single_player_game(CANVAS, bg_image):
 
             if enemy2flag == 0:
                 enemy = Enemy2(xpos=((WIDTH - 600) / 2), ypos=+100,
-                               imagepath1=enemy3_img + 'fb1.png', imagepath2=enemy3_img + 'fb2.png',
-                               imagepath3=enemy3_img + 'fb3.png', imagepath4=enemy3_img + 'fb4.png')
+                               imagepath1=ENEMY_IMAGES + 'boss1.png', imagepath2=ENEMY_IMAGES + 'boss2.png',
+                               imagepath3=ENEMY_IMAGES + 'boss3.png', imagepath4=ENEMY_IMAGES + 'boss4.png')
                 enemy_arr2.append(enemy)
                 enemy2flag = 1
 
-
-            ## Remove all the other enemies
 
         player1.display(screen=CANVAS)
 
@@ -360,7 +348,7 @@ def single_player_game(CANVAS, bg_image):
         elif keys[pygame.K_DOWN]:
             player1.move(direction='d')
 
-        # CANVAS.blit(bull1, (WIDTH / 2 - 50, HEIGHT / 5))
+
 
         for bullet in bull_arr:
             bullet.move(direction='u')
@@ -388,7 +376,6 @@ def single_player_game(CANVAS, bg_image):
                 enemy.move(direction='d')
 
             elif enemy.life > 290:
-                # enemy.move(direction='l')
 
                 if flip < 0:
                     enemy.move(direction='r')
@@ -587,10 +574,10 @@ def end_game(CANVAS, start_bg, won=None, name=None):
         check_window()
 
 
-
         CANVAS.blit(start_bg, (0, 0))
         CANVAS.blit(line1, (400, 50))
         CANVAS.blit(line2, (400, 150))
+        
         if(won):
             CANVAS.blit(line3, (400, 250))
         
@@ -623,9 +610,6 @@ def end_game(CANVAS, start_bg, won=None, name=None):
 
         pygame.display.update()  # To refresh every time while loop runs
         clock.tick(60)  # To run update 60 frames in 1 second
-
-    return "close"
-
 
 
 

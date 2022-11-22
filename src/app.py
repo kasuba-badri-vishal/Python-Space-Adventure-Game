@@ -26,7 +26,7 @@ def game_stats():
            
 @app.route('/experience',methods=['GET'])
 def feedback():
-    return render_template('feedback.html')
+    return render_template('experience.html')
 
 
 

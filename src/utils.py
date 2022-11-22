@@ -51,12 +51,25 @@ Getting the Statistics of the multiplayer game and saving the image
 def get_stats():
 	df = pd.read_csv(os.path.join(STATS,'stats.csv'))
 	stats = df['Player'].value_counts()
-	y = [stats['Player 1'], stats['Player 2']]
-	mylabels = ['Player 1', 'Player 2']
-	mycolors = ["blue", "red"]
-	myexplode = [0.1, 0]
+	values = [stats['Player 1'], stats['Player 2']]
+	labels = ['Player 1', 'Player 2']
+	colors = ["blue", "red"]
+	explode = [0.1, 0]
+	total = values[0] + values[1]
 
-	plt.pie(y, labels = mylabels, explode = myexplode, colors=mycolors, 
+	plt.pie(values, labels = labels, explode = explode, colors=colors, 
 			autopct=lambda p: '{:.0f}%'.format(p), shadow = True)
 	plt.legend(title = "Game WINS", loc='best')
 	plt.savefig(os.path.join('./src/web/static/resources/pie.png'), bbox_inches='tight')
+
+
+	fig = plt.figure(figsize = (6, 4))
+
+	# plt.bar(labels, values, width = 0.2)
+	plt.bar(labels[0], values[0], label='Player 1', color='blue', edgecolor='black')
+	plt.bar(labels[1], values[1], label='Player 2', color='red', edgecolor='black', hatch='//')
+	plt.xlabel("Player Details")	
+	plt.ylabel("No. of Matches")
+	plt.title("Bar Graph of Game Wins (" + str(total) + " Games)")
+	plt.legend(loc='best')
+	plt.savefig(os.path.join('./src/web/static/resources/bar.png'))
