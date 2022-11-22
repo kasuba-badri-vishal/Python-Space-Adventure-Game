@@ -21,9 +21,6 @@
       text-align: center;
       padding-top: 15px;
     }
-    #contact-me{
-      color: aliceblue;
-    }
   </style>
 
   <title>Home</title>
@@ -101,14 +98,14 @@
     Browser is not supporting this video.
   </video>
 
-  <div class="contact-me">
-    <h1 id="mainPageHeading"><b>Game Details!!! &#128516;</b> </h1>
-    <div id="contact-me"> <a target=”_blank” href="https://www.facebook.com/badri.vishal.921" class="fa fa-facebook"></a> </div>
-    <div id="contact-me"> <a target=”_blank” href="https://www.instagram.com/kasubabadri/" class="fa fa-instagram"></a> </div>
-    <div id="contact-me"> <a target=”_blank” href="https://github.com/kasuba-badri-vishal" class="fa fa-github"></a> </div>
-    <div id="contact-me"> <a target=”_blank” href="https://www.linkedin.com/in/badri1999/" class="fa fa-linkedin"></a> </div>
-    <div id="contact-me"> <a target=”_blank” href="https://web.whatsapp.com/" class="fa fa-whatsapp"></a> </div>
-    <div id="contact-me"> <a target=”_blank” href="https://twitter.com/Badrivi01069404" class="fa fa-twitter"></a> </div>
+  <div class="game-details">
+    <h1 id="mainPageHeading" style="padding-bottom: 30px;""><b>Game Details!!! &#128516;</b> </h1>
+    <div class="Information3">
+
+    <p>The game is developed in python and the paradigms of object oriented programming are used. Each component of the game is a class, be it the player, enemy or the bullet. These classes have various methods methods associated with them. As pygame refreshes the screen according to the given Frames Per Second (FPS) rate, and projects the surface associated to each element onto the screen, each component has an associated surface. As any of the components move the coordinates(i.e, associated attributes of the object) change accordingly.</p>
+    <p>Various PNG images (free to use) were adopted as space ships, bullets enemies and game background images. Some times the same object had multiple images associated with it. As an example the first enemy in Single Player mode has 3 associated images. As soon as the bullet from the player strikes this enemy its face changes from angry to crying and then finally pale. This creates a dynamic effect to the character of game elements.</p>
+    <p>The collisions between different objects are calculated by various conditions on their position attributes. A collision of the bullet with the enemy or player results in its life (attribute of the object) being decreased. Each player/enemy has a fixed life. If the player's life diminishes the game is over. If the enemy's life diminishes then the enemy object is deleted. Each loop of pygame refresh checks for all the possible collisions, and changes the attributes accordingly for each element.</p>
+  </div>
   </div>
 
 </body>

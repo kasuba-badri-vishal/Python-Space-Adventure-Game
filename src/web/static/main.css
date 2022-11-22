@@ -2,6 +2,8 @@
     background-color: crimson;
 }
 
+/* -------------------------------------------------------------------------------------- */
+/* Nav Bar CSS */
 .navbar{
     padding: 0;
 }
@@ -10,11 +12,16 @@
     box-shadow: none;
 }
 
-
 nav .nav-item a:hover {
     color: rgb(133, 218, 6) !important
 }
 
+/* -------------------------------------------------------------------------------------- */
+
+
+
+/* -------------------------------------------------------------------------------------- */
+/* Rules Page and other pages CSS */
 .float-container {
     padding: 5px;
 }
@@ -31,47 +38,15 @@ nav .nav-item a:hover {
     align-items: center;
 }
 
-.contact-me {
+.game-details {
     padding-top: 4%;
     text-align: center;
 }
+/* -------------------------------------------------------------------------------------- */
 
 
-.fa {
-    float: left;
-    padding: 40px;
-    font-size: 50px;
-    width: 50px;
-    text-decoration: none;
-    color: blue;
-}
-
-.fa-whatsapp {
-    color: green;
-}
-
-.fa-facebook {
-    color: blue;
-    padding-left: 32%;
-}
-
-.fa-github {
-    color: black;
-}
-
-.fa-instagram {
-    color: rgb(206, 24, 55);
-}
-
-.fa-linkedin {
-    color: rgb(8, 74, 196);
-}
-
-.fa-twitter {
-    color: rgb(12, 85, 180)
-}
-
-
+/* -------------------------------------------------------------------------------------- */
+/* Main Page CSS */
 .main {
     padding: 2rem 2rem;
     text-align: center;
@@ -105,10 +80,25 @@ nav .nav-item a:hover {
     height: 340px;
 }
 
+.Information3 {
+    text-align: center;
+    padding: 50px;
+    border-radius: 25px;
+    background-color: light rgb(187, 187, 118);
+    background: rgb(211, 239, 248);
+    height: 400px;
+}
+
 body {
     background: light rgb(122, 122, 26);
 }
 
+/* -------------------------------------------------------------------------------------- */
+
+
+
+/* -------------------------------------------------------------------------------------- */
+/* Images Slider CSS */
 .slider {
     border-radius: 10px;
     overflow: hidden;
@@ -194,15 +184,14 @@ body {
     transition: 0.2s;
 }
 
+.selfMoving div:not(:last-child) {
+    margin-right: 20px;
+}
+
 #rules{
     list-style-type: none;
 }
 
-
-
-.selfMoving div:not(:last-child) {
-    margin-right: 20px;
-}
 
 
 #radio1:checked~.selfMoving .selfCheckingBTN1 {
@@ -220,3 +209,5 @@ body {
 #radio4:checked~.selfMoving .selfCheckingBTN4 {
     background: #40D3DC;
 }
+
+/* -------------------------------------------------------------------------------------- */
