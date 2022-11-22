@@ -106,9 +106,9 @@ def multi_player_game(CANVAS, clock, game_bg):
         pygame.draw.rect(CANVAS,(255,255,255),( WIDTH - 310,10, 300,25),4)
         
         if(multi_player1.health < -300):
-            return "player2"
+            return 2
         elif(multi_player2.health < -300):
-            return "player1"
+            return 1
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -441,7 +441,7 @@ def start_game(CANVAS, clock, start_bg):
         clock.tick(60)  # To run update 60 frames in 1 second
 
 
-def end_game(CANVAS, clock, start_bg, won=None):
+def end_game(CANVAS, clock, start_bg, won=None, name=None):
 
 
     # TITLE OF THE GAME
@@ -450,10 +450,10 @@ def end_game(CANVAS, clock, start_bg, won=None):
     line2 = font.render('OVER', False, (255, 232, 31))
 
     if(won!=None):
-        line3 = font.render(won, False, (255, 232, 31))
+        line3 = font.render(str(won) + ": " + name + " Won!!!", False, (255, 232, 31))
 
     # BACKGROUND MUSIC
-    mixer.music.load(os.path.join(AUDIO,"rain.mp3"))
+    mixer.music.load(os.path.join(AUDIO,"endgame.mp3"))
     mixer.music.play(-1)
 
     # SINGLE PLAYER BUTTON
@@ -520,7 +520,6 @@ def main():
 
     while(True):
         if(GAME_STATE == "start"):
-            print("heelo")
             GAME_STATE = start_game(CANVAS, clock, start_bg)
         elif(GAME_STATE == "end"):
             GAME_STATE = end_game(CANVAS,clock, end_bg)
@@ -528,7 +527,8 @@ def main():
             GAME_STATE = single_player_game(CANVAS, clock, game_bg)
         elif(GAME_STATE == "multi_player"):
             player = multi_player_game(CANVAS, clock, game_bg)
-            GAME_STATE = end_game(CANVAS,clock, end_bg, won=player)
+            update_stats(player)
+            GAME_STATE = end_game(CANVAS,clock, end_bg, won=player, name=PLAYER_NAMES[player-1])
             print(GAME_STATE)
 
 

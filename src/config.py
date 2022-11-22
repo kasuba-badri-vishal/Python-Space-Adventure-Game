@@ -9,6 +9,10 @@ WIDTH = 1200 #1920
 HEIGHT = 600 #1080
 FPS = 60
 
+WON = None
+
+PLAYER_NAMES = ['Aditya', 'Badri']
+
 
 IMAGES = "./data/images/"
 AUDIO  = "./data/audio/"
