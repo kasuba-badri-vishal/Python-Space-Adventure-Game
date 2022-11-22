@@ -10,10 +10,10 @@ HEIGHT = 600 #1080
 FPS = 60
 
 
-IMAGES = "./../data/images/"
-AUDIO  = "./../data/audio/"
-FONTS  = "./../data/fonts/"
-STATS  = "./../data/stats/"
+IMAGES = "./data/images/"
+AUDIO  = "./data/audio/"
+FONTS  = "./data/fonts/"
+STATS  = "./data/stats/"
 
 BACKGROUND_IMAGES = os.path.join(IMAGES,"backgrounds")
 ASTRONOMER_IMAGES = os.path.join(IMAGES,"astronomers")
