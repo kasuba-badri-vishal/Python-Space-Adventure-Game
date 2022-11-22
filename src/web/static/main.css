@@ -15,9 +15,20 @@ nav .nav-item a:hover {
     color: rgb(133, 218, 6) !important
 }
 
+.float-container {
+    padding: 5px;
+}
+
+.float-child {
+    width: 50%;
+    float: left;
+    padding: 10px;
+}  
+
 .link {
     padding-top: 1%;
     color: rgb(17, 1, 102);
+    align-items: center;
 }
 
 .contact-me {
@@ -70,7 +81,7 @@ nav .nav-item a:hover {
 }
 
 
-.MyInformation {
+.Information {
     float: left;
     padding: 1rem 1rem;
     border: 0.5px solid crimson;
@@ -83,7 +94,7 @@ nav .nav-item a:hover {
     height: 340px;
 }
 
-.MyInformation2 {
+.Information2 {
     float: left;
     border: 0.5px solid crimson;
     width: 580px;
