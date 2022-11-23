@@ -496,6 +496,7 @@ def end_game(CANVAS, start_bg, won=None, name=None):
     line1 = font.render('    GAME  ', False, (255, 232, 31))
     line2 = font.render('OVER', False, (255, 232, 31))
 
+    ### Won Parameter is used in Single player and multi player game to get message of who won the game
     if(won!=None):
         if(name==None):
             line3 = font.render(won + " Won!!!", False, (255, 232, 31))
@@ -507,22 +508,23 @@ def end_game(CANVAS, start_bg, won=None, name=None):
     background_music("endgame.mp3")
 
 
-    # SINGLE PLAYER BUTTON
+    # Buttons to use for Replaying the Game
     astro1 = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1.png')).convert_alpha()
     astro1enl = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro1enlarged.png')).convert_alpha()
     astro1_rect = astro1.get_rect(topleft=(WIDTH / 4, HEIGHT / 3.2))
 
+    # Buttons to use for Exiting the Game
     astro2 = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro2.png')).convert_alpha()
     astro2enl = pygame.image.load(os.path.join(ASTRONOMER_IMAGES,'astro2enlarged.png')).convert_alpha()
     astro2_rect = astro2.get_rect(topleft=((WIDTH / 4) - 40, HEIGHT / 2))
 
-    # MULTIPLAYER BUTTON
+    # Rendering the Font of the text for Play again and Exiting the Game
     font1 = pygame.font.Font(ALBA_FONT, int(120*HEIGHT/1020))
     line4 = font1.render('  Play Again', False, (255, 255, 255))
     line5 = font1.render('  Exit Game', False, (255, 255, 255))
 
 
-
+    ### Recurring loop to render text, objects and data into the Display window 
     while True:
         check_window()
 
@@ -531,7 +533,7 @@ def end_game(CANVAS, start_bg, won=None, name=None):
         CANVAS.blit(line2, (WIDTH * 5 / 8, HEIGHT / 8))
         
         if(won):
-            CANVAS.blit(line3, (200, HEIGHT - 100))
+            CANVAS.blit(line3, (300, HEIGHT - 200))
         
         mouse_coordinates = pygame.mouse.get_pos()
         if astro2_rect.collidepoint(mouse_coordinates):

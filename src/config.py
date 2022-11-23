@@ -6,8 +6,8 @@ PORT = 5000
 
 
 # Declaration of Size of the Window and No. of frames per second
-WIDTH = 1200 #1920
-HEIGHT = 600 #1080
+WIDTH = 1920
+HEIGHT = 1080
 FPS = 60
 
 

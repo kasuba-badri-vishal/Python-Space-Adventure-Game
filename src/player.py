@@ -1,7 +1,23 @@
+"""
+This Python file contains the Declaration of the objects used in the Pygame
+Objects used in the pygame are Player, Bullet, Enemy1 and Enemy2 (Boss)
+The Declared class objects would be used in translating the objects from one place to other, update their health information and also delete them
+
+"""
 import pygame
 from config import *
 
+
+"""
+Same Class Declaration is adopted for both multiplayer and single player games
+The Class contains 2 methods
+* move()     - To move the player with translational constraints applied
+* got_hurt() - To update the health status of the player
+* display()  - To Render and display the player and health status on the Screen
+"""
 class Player:
+
+    ### Class Constructor to initialize the Player class object with the respective player object parameters
     def __init__(self, xpos, ypos, imagepath, multiplayer):
         self.xpos = xpos
         self.ypos = ypos
@@ -14,6 +30,8 @@ class Player:
         self.centerx = self.xpos + self.surface.get_width() / 2
         self.centery = self.ypos + self.surface.get_height() / 2
 
+
+    ### Method of Player object, to move the player UP, DOWN, LEFT, RIGHT using the keys and the translational constraints
     def move(self, direction):
         if direction == 'l':
             if self.xpos > 40 or (self.multiplayer==1 and self.xpos < WIDTH):
@@ -31,9 +49,13 @@ class Player:
         self.centerx = self.xpos + self.surface.get_width() / 2
         self.centery = self.ypos + self.surface.get_height() / 2
     
+
+    ### When Player gets hit by bullet, his health state is updated by this method
     def got_hurt(self):
         self.health -= 20
 
+
+    ### Displaying the Life of the Player and also rendering him onto the  window screen using blit
     def display(self, screen):
         if(self.multiplayer==0):
             life_val = str(self.life)
@@ -42,7 +64,17 @@ class Player:
         screen.blit(self.surface, (self.xpos, self.ypos))
 
 
+
+
+"""
+Declaration of Bullet class, which are used by Boss Enemy, Player1 and multi-players to emit bullets and hurt rivals
+The Class contains 2 methods
+* move()     - To move the bullet with translational constraints applied
+* display()  - To Render and display the bullet and the current position of it on the Screen
+"""
 class Bullet:
+
+    ### Class Constructor to initialize the Bullet class object with the respective bullet object parameters
     def __init__(self, xpos, ypos, imagepath):
         self.xpos = xpos
         self.ypos = ypos
@@ -51,6 +83,9 @@ class Bullet:
         self.centerx = self.xpos + self.surface.get_width() / 2
         self.centery = self.ypos + self.surface.get_height() / 2
 
+
+    ### Method of Bullet object, to move the bullet UP, DOWN, LEFT, RIGHT using the keys and the translational constraints
+    ### Note that bullets can travel only in one direction and are suitably used
     def move(self, direction):
         if direction == 'u':
             if self.ypos > 0:
@@ -74,11 +109,23 @@ class Bullet:
                 self.isactive = False
         self.centery = self.ypos + self.surface.get_height() / 2
 
+
+    ### Displaying the bullet by rendering it onto the  window screen using blit
     def display(self, screen):
         screen.blit(self.surface, (self.xpos, self.ypos))
 
 
+
+
+"""
+Enemy object declaration which is used in singly player game
+The Class contains 2 methods
+* move()     - To move the Enemy with translational constraints applied
+* display()  - To Render and display the enemy and  also rendering current state of the enemy
+"""
 class Enemy1:
+
+    ### Class Constructor to initialize the Enemy1 class object with the respective Enemy1 object parameters
     def __init__(self, xpos, ypos, imagepath1, imagepath2, imagepath3):
         self.xpos = xpos
         self.ypos = ypos
@@ -89,13 +136,16 @@ class Enemy1:
         self.surface2 = pygame.image.load(imagepath2).convert_alpha()
         self.surface3 = pygame.image.load(imagepath3).convert_alpha()
 
-
+    
+    ### Method of Enemy1 object, to move the player UP, DOWN, LEFT, RIGHT using the keys and the translational constraints
     def move(self):
         if self.ypos < HEIGHT - 20:
             self.ypos += .25
         else:
             self.isalive = False
 
+
+    ### Displaying the Enemy1 by rendering him onto the  window screen using blit
     def display(self, screen):
         if self.life == 3:
             screen.blit(self.surface1, (self.xpos, self.ypos))
@@ -106,8 +156,17 @@ class Enemy1:
 
 
 
+
+"""
+Boss Enemy object declaration which is used in singly player game, where it gets more power abilities with reduced span of life
+The Class contains 2 methods
+* move()     - To move the Enemy2 with translational constraints applied
+* display()  - To Render and display the boss enemy and health status on the Screen
+"""
 class Enemy2:
 
+
+    ### Class Constructor to initialize the Enemy2 class object with the respective Enemy2 object parameters
     def __init__(self, xpos, ypos, imagepath1, imagepath2, imagepath3, imagepath4):
         self.xpos = xpos
         self.ypos = ypos
@@ -126,7 +185,7 @@ class Enemy2:
         self.centery = self.ypos + self.presentsurface.get_height() / 2
 
         
-
+    ### Method of Enemy2 object, to move the boss enemy UP, DOWN, LEFT, RIGHT using the keys and the translational constraints
     def move(self, direction):
 
         if direction == 'd':
@@ -151,10 +210,15 @@ class Enemy2:
                 self.xpos -= 10
                 self.centerx = self.xpos + self.presentsurface.get_width() / 2
 
+
+
+    ### Displaying the Life of the Boss Enemy and also rendering him onto the window screen using blit
     def display(self, screen):
         life_val = str(self.life)
         lineinfo = self.font.render(life_val, False, (255, 255, 255))
 
+
+        ### Based on his lifespan, the boss enemy gets some aura of power, strength and glows with reduced life span
         if self.life >= 300:
             self.presentsurface = self.surface1
         elif self.life >= 200:

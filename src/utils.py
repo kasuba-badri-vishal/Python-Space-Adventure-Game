@@ -8,6 +8,7 @@ from pygame import mixer
 
 """
 Function to exit the Pygame
+The function takes use of quit method of pygame library to quit the game and exit
 """
 def exit_game():
     pygame.quit()
@@ -16,6 +17,7 @@ def exit_game():
 
 """
 Checking the Window buttons in each iteration to see if the window would be closed or not
+Pressing KEY_ESCAPE or window QUIT keys would close the game by calling exit_game method
 """
 def check_window():
 	for event in pygame.event.get():
@@ -38,6 +40,9 @@ def background_music(audio_file):
 """
 If a bullet reaches near to a player upto some threshold X_POS and Y_POS value, the player gets hit by bullet
 The player's health information is updated accordingly and the objects is returned back
+* bull_arr :- list of bullet elements
+* player   :- player who would be affected by the series of bullets in bull_arr
+*** Returns the updated bull_arr and player details
 """
 def update_player_health(player, bull_arr):
 	if(len(bull_arr)):
@@ -48,7 +53,11 @@ def update_player_health(player, bull_arr):
 	return player, bull_arr
 
 """
-
+If the bullet is collided with some object, the bullet is being removed from the screen
+* bull_arr :- list of bullet elements
+* CANVAS   :- Pygame Display window
+* Direction:- Direction in which the bullet is moving upon
+*** returns bull_arr
 """
 def check_bullet_status(bull_arr, CANVAS, direction=None):
 	for bullet in bull_arr:
@@ -62,7 +71,11 @@ def check_bullet_status(bull_arr, CANVAS, direction=None):
 	return bull_arr
 
 """
-
+Printing the rendered text onto the Screen by use of blit method
+* lines_list :- list of lines that needs to be printed
+* CANVAS     :- Pygame Display window
+* multiplayer:- value to check if the player is from multiplayer game
+*** returns bull_arr
 """
 def print_lines(lines_list, CANVAS, multiplayer=0):
 	if(multiplayer):
@@ -77,6 +90,13 @@ def print_lines(lines_list, CANVAS, multiplayer=0):
 			value += 2
 
 
+"""
+Rendering the Description text that would be printed on the screen, based on the position, fontsize and message parameters
+* font_size :- Size of the font that should be used to display message on window
+* message   :- Message that should be appeared on the  Display window
+* width     :-  width of the display window from where it should start to render
+* height    :-  height of the display window from where it should start to render
+"""
 def render_text(font_size, message, width, height, gap):
 	font = pygame.font.Font(ALBA_FONT, font_size)
 	line = font.render(message, False, (255, 255, 255))
@@ -86,6 +106,7 @@ def render_text(font_size, message, width, height, gap):
 
 """
 Updating the statistics of the multiplayer game if any of the player wins
+* player : Takes the player value as input to update in the stats accordingly
 """
 def update_stats(player):
 	
@@ -103,7 +124,8 @@ def update_stats(player):
     
 
 """
-Getting the Statistics of the multiplayer game and saving the images of Bar Plot and Pie Plot
+Getting the Statistics of the multiplayer game and saving the images of Bar Plot and Pie Plot into images
+Saves Images in resources directory to store the results in the website
 """
 def get_stats():
 
