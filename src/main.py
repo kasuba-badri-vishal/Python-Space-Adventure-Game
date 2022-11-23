@@ -1,5 +1,7 @@
 '''
-* PYGAME as part of course project of CS699 Software Lab 
+* Adventure PYGAME as part of course project of CS699 Software Lab 
+* Has Single player and Multi player components and is basically a space ranger shooting game with multiple levels
+*
 '''
 import os
 import pygame
@@ -12,8 +14,6 @@ from utils import *
 
 
 
-
-
 def multi_player_game(CANVAS, game_bg):
 
     # # BACKGROUND MUSIC
@@ -21,7 +21,7 @@ def multi_player_game(CANVAS, game_bg):
 
     clock = pygame.time.Clock()
 
-    # INITIALIZE PLAYER
+    # INITIALIZE PLAYERS
     multi_player1 = Player(xpos=10, ypos=30, imagepath=os.path.join(PLAYER_IMAGES,'multi_player1.png'), multiplayer=1)
     multi_player2 = Player(xpos=7*WIDTH/8, ypos=HEIGHT/2, imagepath=os.path.join(PLAYER_IMAGES,'multi_player2.png'), multiplayer=2)
 
@@ -41,6 +41,9 @@ def multi_player_game(CANVAS, game_bg):
     # INITIALIZE BULLET LIST
     bull_arr_player1 = []
     bull_arr_player2 = []
+
+    # Initializing variables that would be used
+    threshold_health = -300
 
     while True:
         for event in pygame.event.get():
@@ -71,16 +74,10 @@ def multi_player_game(CANVAS, game_bg):
             CANVAS.blit(line10, ((400, HEIGHT / 10 + 100)))
         if tick > 4000 and tick < 20000:
             multi_player2.display(screen=CANVAS)
-            CANVAS.blit(line1, ((WIDTH/4, HEIGHT / 10)))
-            CANVAS.blit(line2, ((WIDTH/4, HEIGHT / 10 + 100)))
-            CANVAS.blit(line3, ((WIDTH/4, HEIGHT / 10 + 200)))
-            CANVAS.blit(line4, ((WIDTH/4, HEIGHT / 10 + 300)))
+            print_lines([line1, line2, line3, line4], CANVAS, multiplayer=1)
         elif tick > 20000 and tick < 36000:
             multi_player1.display(screen=CANVAS)
-            CANVAS.blit(line5, ((WIDTH/8, HEIGHT / 10)))
-            CANVAS.blit(line6, ((WIDTH/8, HEIGHT / 10 + 100)))
-            CANVAS.blit(line7, ((WIDTH/8, HEIGHT / 10 + 200)))
-            CANVAS.blit(line8, ((WIDTH/8, HEIGHT / 10 + 300)))
+            print_lines([line5, line6, line7, line8], CANVAS, multiplayer=1)
         elif tick > 36000:
             multi_player1.display(screen=CANVAS)
             multi_player2.display(screen=CANVAS)
@@ -89,6 +86,7 @@ def multi_player_game(CANVAS, game_bg):
         pygame.draw.rect(CANVAS,(255,255,255),(10,10,300,25),4)
 
 
+        ### Movement of Player 2 based on the Keys Pressed
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             multi_player2.move(direction='l')
@@ -99,15 +97,8 @@ def multi_player_game(CANVAS, game_bg):
         elif keys[pygame.K_DOWN]:
             multi_player2.move(direction='d')
 
-
-        pygame.draw.rect(CANVAS,(255,0,0),(WIDTH - 310,10, 290 + multi_player2.health,25))
-        pygame.draw.rect(CANVAS,(255,255,255),( WIDTH - 310,10, 300,25),4)
         
-        if(multi_player1.health < -300):
-            return 2
-        elif(multi_player2.health < -300):
-            return 1
-
+        ### Movement of Player 1 based on the Keys Pressed
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
             multi_player1.move(direction='l')
@@ -119,33 +110,23 @@ def multi_player_game(CANVAS, game_bg):
             multi_player1.move(direction='d')
 
 
-        for bullet in bull_arr_player1:
-            bullet.move(direction='r')
-
-            if bullet.isactive == False:
-                bull_arr_player1.remove(bullet)
-            else:
-                bullet.display(screen=CANVAS)
+        pygame.draw.rect(CANVAS,(255,0,0),(WIDTH - 310,10, 290 + multi_player2.health,25))
+        pygame.draw.rect(CANVAS,(255,255,255),( WIDTH - 310,10, 300,25),4)
         
-        for bullet in bull_arr_player2:
-            bullet.move(direction='l')
 
-            if bullet.isactive == False:
-                bull_arr_player2.remove(bullet)
-            else:
-                bullet.display(screen=CANVAS)
+        ### Ending the Game if either of the Player's health is less than threshold
+        if(multi_player1.health < threshold_health):
+            return 2
+        elif(multi_player2.health < threshold_health):
+            return 1
 
-        if(len(bull_arr_player1)):
-            for b in bull_arr_player1:
-                if(abs(b.xpos - multi_player2.xpos) < 50) and (abs(b.ypos - multi_player2.ypos) < 50):
-                    multi_player2.got_hurt()
-                    bull_arr_player1.remove(b)
 
-        if(len(bull_arr_player2)):
-            for b in bull_arr_player2:
-                if(abs(b.xpos - multi_player1.xpos) < 50) and (abs(b.ypos - multi_player1.ypos) < 50):
-                    multi_player1.got_hurt()
-                    bull_arr_player2.remove(b)
+        bull_arr_player1 = check_bullet_status(bull_arr_player1, CANVAS, direction="r")
+        bull_arr_player2 = check_bullet_status(bull_arr_player2, CANVAS, direction="l")
+
+        
+        multi_player1, bull_arr_player2 = update_player_health(multi_player1, bull_arr_player2)
+        multi_player2, bull_arr_player1 = update_player_health(multi_player2, bull_arr_player1)
 
 
         pygame.display.update()  # To refresh every time while loop runs
@@ -155,9 +136,10 @@ def multi_player_game(CANVAS, game_bg):
 
 def single_player_game(CANVAS, bg_image):
 
+    # Initialize clock object
+    clock = pygame.time.Clock()  
 
-    clock = pygame.time.Clock()  # Initialize clock object
-    count = 0
+    # In Single player game there is Phase at each passage of time
     phase = 'instructions'
     ctdcount = 0
 
@@ -177,54 +159,36 @@ def single_player_game(CANVAS, bg_image):
     vert_gap = HEIGHT / 100  # Vertical Gap
     hor_gap = WIDTH / 100  # Horizontal Gap
 
+
     # Greetings
-    font_size = int(WIDTH/8.0)
-    font1 = pygame.font.Font(ALBA_FONT, font_size)
-    line1 = font1.render('GREETINGS', False, (255, 255, 255))
-    line1_rect = line1.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 15 * vert_gap))
-    line2 = font1.render(' MAVERICK', False, (255, 255, 255))
-    line2_rect = line1.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 15 * vert_gap))
+    line1, line1_rect = render_text(int(WIDTH/8.0), 'GREETINGS', (WIDTH / 2), (HEIGHT / 2), (-15 * vert_gap))
+    line2, line2_rect = render_text(int(WIDTH/8.0), ' MAVERICK', (WIDTH / 2), (HEIGHT / 2), (+15 * vert_gap))
+
 
     # This is your Captain
-    font_size = int(WIDTH / 14.0)
-    font1 = pygame.font.Font(ALBA_FONT, font_size)
-    line3 = font1.render('This is your Captain', False, (255, 255, 255))
-    line3_rect = line3.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 10 * vert_gap))
-    line4 = font1.render(' The Earth is under attak', False, (255, 255, 255))
-    line4_rect = line4.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 10 * vert_gap))
+    line3, line3_rect = render_text(int(WIDTH/14.0), 'This is your Captain',      (WIDTH / 2), (HEIGHT / 2), (-10 * vert_gap))
+    line4, line4_rect = render_text(int(WIDTH/14.0), ' The Earth is under attak', (WIDTH / 2), (HEIGHT / 2), (+10 * vert_gap))
+
 
     # Arrows
-    font_size = int(WIDTH / 15.0)
-    font1 = pygame.font.Font(ALBA_FONT, font_size)
-    line5 = font1.render('DEFEND EARTH', False, (255, 255, 255))
-    line5_rect = line5.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 10 * vert_gap))
-    line6 = font1.render('USE ARROW KEYS TO MOVE', False, (255, 255, 255))
-    line6_rect = line6.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 10 * vert_gap))
+    line5, line5_rect = render_text(int(WIDTH/15.0), 'DEFEND EARTH',           (WIDTH / 2), (HEIGHT / 2), (-10 * vert_gap))
+    line6, line6_rect = render_text(int(WIDTH/15.0), 'USE ARROW KEYS TO MOVE', (WIDTH / 2), (HEIGHT / 2), (+10 * vert_gap))
+
 
     # FIRE
-    font_size = int(WIDTH / 15.0)
-    font1 = pygame.font.Font(ALBA_FONT, font_size)
-    line7 = font1.render('USE SPACEBAR TO SHOOT ', False, (255, 255, 255))
-    line7_rect = line7.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    line7, line7_rect = render_text(int(WIDTH/15.0), 'USE SPACEBAR TO SHOOT ', (WIDTH / 2), (HEIGHT / 2), 0)
+
 
     # HEALTH BAR
-    font_size = int(WIDTH / 15.0)
-    font1 = pygame.font.Font(ALBA_FONT, font_size)
-    line8 = font1.render('BE SAFE MAVERICK', False, (255, 255, 255))
-    line8_rect = line8.get_rect(center=(WIDTH / 2, (HEIGHT / 2) - 20 * vert_gap))
-    line9 = font1.render('Dont Let your ego write ', False, (255, 255, 255))
-    line9_rect = line9.get_rect(center=(WIDTH / 2, HEIGHT / 2))
-    line10 = font1.render('checks your body can\'t cash', False, (255, 255, 255))
-    line10_rect = line10.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 20 * vert_gap))
+    line8, line8_rect   = render_text(int(WIDTH/15.0), 'BE SAFE MAVERICK',             (WIDTH / 2), (HEIGHT / 2), (-20 * vert_gap))
+    line9, line9_rect   = render_text(int(WIDTH/15.0), 'Dont Let your ego write ',     (WIDTH / 2), (HEIGHT / 2), 0)
+    line10, line10_rect = render_text(int(WIDTH/15.0), 'checks your body can\'t cash', (WIDTH / 2), (HEIGHT / 2), (+20 * vert_gap))
 
-    font_size = int(WIDTH /2.5)
-    font1 = pygame.font.Font(ALBA_FONT, font_size)
-    three = font1.render('3', False, (255, 255, 255))
-    three_rect = three.get_rect(center=(WIDTH / 2, HEIGHT / 2))
-    two = font1.render('2', False, (255, 255, 255))
-    two_rect = three.get_rect(center=(WIDTH / 2, HEIGHT / 2))
-    one = font1.render('1', False, (255, 255, 255))
-    one_rect = three.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+
+    # tHREE_TWO_ONE
+    three, three_rect = render_text(int(WIDTH /2.5), '3', (WIDTH / 2), (HEIGHT / 2), 0)
+    two, two_rect     = render_text(int(WIDTH /2.5), '2', (WIDTH / 2), (HEIGHT / 2), 0)
+    one, one_rect     = render_text(int(WIDTH /2.5), '1', (WIDTH / 2), (HEIGHT / 2), 0)
 
 
     start_time = pygame.time.get_ticks()
@@ -238,7 +202,7 @@ def single_player_game(CANVAS, bg_image):
     timer = 0
 
     # PHASE : Enemy2 VARIABLES
-    enemy2flag = 0
+    enemy2flag = 0  
     flip = 100
     enemybulletFlag = 0
 
@@ -258,29 +222,21 @@ def single_player_game(CANVAS, bg_image):
         CANVAS.blit(bg_image, (0, 0))
 
 
-        tick = pygame.time.get_ticks() - start_time
-
-        if pygame.time.get_ticks() > 31400:
-            if count == 0:
-                count = 1
         tick = pygame.time.get_ticks() -start_time
 
-
+        ### Instructions phase from 1400 to 29000
         if tick>1400 and tick < 5500:
-            CANVAS.blit(line1, line1_rect)
-            CANVAS.blit(line2, line2_rect)
+            print_lines([line1, line1_rect, line2, line2_rect], CANVAS)
         elif tick>6500 and tick <10000:
-            CANVAS.blit(line3, line3_rect)
-            CANVAS.blit(line4, line4_rect)
+            print_lines([line3, line3_rect, line4, line4_rect], CANVAS)
         elif tick > 11550 and tick < 16150:
-            CANVAS.blit(line5, line5_rect)
-            CANVAS.blit(line6, line6_rect)
+            print_lines([line5, line5_rect, line6, line6_rect], CANVAS)
         elif tick > 16150 and tick < 21300:
-            CANVAS.blit(line7, line7_rect)
+            print_lines([line7, line7_rect], CANVAS)
         elif tick > 21300 and tick < 29000:
-            CANVAS.blit(line8, line8_rect)
-            CANVAS.blit(line9, line9_rect)
-            CANVAS.blit(line10, line10_rect)
+            print_lines([line8, line8_rect, line9, line9_rect, line10, line10_rect], CANVAS)
+        
+        ### Count down begins from 29000 onwards
         elif tick > 29000 and tick < 31400:
             if ctdcount < 50:
                 CANVAS.blit(three, three_rect)
@@ -290,39 +246,34 @@ def single_player_game(CANVAS, bg_image):
                 ctdcount += 1
             else:
                 CANVAS.blit(one, one_rect)
+        
+        ### Enemies start to appear after 31400 and boss enemey appears after 70545 time
         elif tick > 31400 and tick<70545:
             phase = 'enemy1'
         elif tick > 70545:
             phase = 'enemy2'
 
 
+
         if phase == 'enemy1':
 
             if (flag == 1) or (timer > 620 and flag == 3):
-                x = 40 + (WIDTH / 10) * np.arange(10)
-                x = list(x)
+                x = list(40 + (WIDTH / 10) * np.arange(10))
                 for j in range(10):
                     enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien1.png'),
                                    imagepath2=os.path.join(ENEMY_IMAGES, 'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES, 'alien3.png'))
                     enemy_arr.append(enemy)
+                flag = 2 if (flag==1) else 4
 
-                if flag == 1:
-                    flag = 2
-                else:
-                    flag = 4
 
             elif (timer > 310 and flag == 2) or (timer > 920 and flag == 4):
 
-                x = 130 + ((WIDTH - 180) / 9) * np.arange(9)
-                x = list(x)
+                x = list(130 + ((WIDTH - 180) / 9) * np.arange(9))
                 for j in range(9):
                     enemy = Enemy1(xpos=x[j], ypos=-20, imagepath1=os.path.join(ENEMY_IMAGES, 'alien1.png'),
                                    imagepath2=os.path.join(ENEMY_IMAGES, 'alien2.png'), imagepath3=os.path.join(ENEMY_IMAGES, 'alien3.png'))
                     enemy_arr.append(enemy)
-                if flag == 2:
-                    flag = 3
-                else:
-                    flag = 5
+                flag = 3 if (flag==2) else 5
 
             timer += 1
 
@@ -330,8 +281,8 @@ def single_player_game(CANVAS, bg_image):
 
             if enemy2flag == 0:
                 enemy = Enemy2(xpos=((WIDTH - 600) / 2), ypos=+100,
-                               imagepath1=ENEMY_IMAGES + 'boss1.png', imagepath2=ENEMY_IMAGES + 'boss2.png',
-                               imagepath3=ENEMY_IMAGES + 'boss3.png', imagepath4=ENEMY_IMAGES + 'boss4.png')
+                               imagepath1=ENEMY_IMAGES + '/boss1.png', imagepath2=ENEMY_IMAGES + '/boss2.png',
+                               imagepath3=ENEMY_IMAGES + '/boss3.png', imagepath4=ENEMY_IMAGES + '/boss4.png')
                 enemy_arr2.append(enemy)
                 enemy2flag = 1
 
@@ -350,28 +301,19 @@ def single_player_game(CANVAS, bg_image):
 
 
 
-        for bullet in bull_arr:
-            bullet.move(direction='u')
+        bull_arr       = check_bullet_status(bull_arr, CANVAS, direction="u")
+        bull_arr_enemy = check_bullet_status(bull_arr_enemy, CANVAS, direction="d")
 
-            if bullet.isactive == False:
-                bull_arr.remove(bullet)
-            else:
-                bullet.display(screen=CANVAS)
-
-        for bullet in bull_arr_enemy:
-            bullet.move(direction='d')
-
-            if bullet.isactive == False:
-                bull_arr_enemy.remove(bullet)
-            else:
-                bullet.display(screen=CANVAS)
 
         for enemy in enemy_arr:
             enemy.move()
             enemy.display(screen=CANVAS)
+            if(enemy.isalive == False):
+                return "Enemies"
 
         for enemy in enemy_arr2:
 
+            
             if enemy.life > 300:
                 enemy.move(direction='d')
 
@@ -412,6 +354,8 @@ def single_player_game(CANVAS, bg_image):
                         flip = -100
 
             enemy.display(screen=CANVAS)
+            if(enemy.isalive == False):
+                return "Boss"
 
         for b in bull_arr:
             for e in enemy_arr:
@@ -432,11 +376,14 @@ def single_player_game(CANVAS, bg_image):
                     vcon1 = abs(b.centery - b.surface.get_height() / 2 - (e2.centery + e2.presentsurface.get_height() / 2)) < 5
 
                     if hcon1 and hcon2 and vcon1:
-                        e2.life -= 1
+                        e2.life -= 10
                         if b in bull_arr:
                             bull_arr.remove(b)
                         if (e2.life == 0):
                             enemy_arr2.remove(e2)
+
+                        if(len(enemy_arr2)==0):
+                            return "player"
 
             # Collision of Enemy Bullets with Player Bullets
             for enemyBulllet in bull_arr_enemy:
@@ -457,10 +404,14 @@ def single_player_game(CANVAS, bg_image):
                         player1.centery - player1.surface.get_height() / 2)) < 5
 
             if hcon1 and hcon2 and vcon1:
-                player1.life -= 1
+                player1.life -= 10
                 if enemyBulllet in bull_arr_enemy:
                     bull_arr_enemy.remove(enemyBulllet)
 
+        ### Ending the Game if the Player's health is less than threshold
+        if(player1.life < 0):
+            return "Boss"
+        
 
 
         pygame.display.update()  # To refresh every time while loop runs
@@ -546,7 +497,10 @@ def end_game(CANVAS, start_bg, won=None, name=None):
     line2 = font.render('OVER', False, (255, 232, 31))
 
     if(won!=None):
-        line3 = font.render(str(won) + ": " + name + " Won!!!", False, (255, 232, 31))
+        if(name==None):
+            line3 = font.render(won + " Won!!!", False, (255, 232, 31))
+        else:
+            line3 = font.render(won + ": " + name + " Won!!!", False, (255, 232, 31))
 
     
     # BACKGROUND MUSIC
@@ -570,16 +524,14 @@ def end_game(CANVAS, start_bg, won=None, name=None):
 
 
     while True:
-
         check_window()
 
-
         CANVAS.blit(start_bg, (0, 0))
-        CANVAS.blit(line1, (400, 50))
-        CANVAS.blit(line2, (400, 150))
+        CANVAS.blit(line1, (WIDTH / 16, HEIGHT / 8))
+        CANVAS.blit(line2, (WIDTH * 5 / 8, HEIGHT / 8))
         
         if(won):
-            CANVAS.blit(line3, (400, 250))
+            CANVAS.blit(line3, (200, HEIGHT - 100))
         
         mouse_coordinates = pygame.mouse.get_pos()
         if astro2_rect.collidepoint(mouse_coordinates):
@@ -604,8 +556,8 @@ def end_game(CANVAS, start_bg, won=None, name=None):
             CANVAS.blit(astro2, astro2_rect)
             CANVAS.blit(astro1, astro1_rect)
 
-        CANVAS.blit(line4, (WIDTH / 4 + 100, HEIGHT / 3.2))
-        CANVAS.blit(line5, (WIDTH / 4 + 150, HEIGHT / 2))
+        CANVAS.blit(line4, (WIDTH / 4 + 100, HEIGHT / 3.4))
+        CANVAS.blit(line5, (WIDTH / 4 + 100, HEIGHT / 2))
 
 
         pygame.display.update()  # To refresh every time while loop runs
@@ -631,7 +583,7 @@ def main():
     
     # Initializing the Pygame and the Display Window
     pygame.init()
-    CANVAS = pygame.display.set_mode((WIDTH, HEIGHT))
+    CANVAS = pygame.display.set_mode((WIDTH, HEIGHT), HWSURFACE | DOUBLEBUF | RESIZABLE)
 
     # Declaring the Name of the game
     pygame.display.set_caption("ADVENTURE TIME") 
@@ -651,10 +603,11 @@ def main():
             GAME_STATE = end_game(CANVAS, end_bg)
         elif(GAME_STATE == "single_player"):
             GAME_STATE = single_player_game(CANVAS, game_bg)
+            GAME_STATE = end_game(CANVAS, end_bg, won=GAME_STATE)
         elif(GAME_STATE == "multi_player"):
             player = multi_player_game(CANVAS, game_bg)
             update_stats(player)
-            GAME_STATE = end_game(CANVAS, end_bg, won=player, name=PLAYER_NAMES[player-1])
+            GAME_STATE = end_game(CANVAS, end_bg, won=str(player), name=PLAYER_NAMES[player-1])
                         
         else:
             break

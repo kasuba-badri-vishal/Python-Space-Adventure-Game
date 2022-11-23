@@ -39,3 +39,13 @@ ENEMY_IMAGES = os.path.join(IMAGES,"enemy")
 #Font type for the Details that are shown on the Pygame
 ALBA_FONT  = os.path.join(FONTS, 'alba/ALBAS___.TTF')
 SPACE_FONT = os.path.join(FONTS, 'space-age/space age.ttf')
+
+
+
+#Threshold Bullet hit distance for the Players
+X_POS = 50
+Y_POS = 50
+
+
+# Threshold of Distance between two lines that are displayed
+DISTANCE = 100

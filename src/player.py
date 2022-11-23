@@ -16,9 +16,9 @@ class Player:
 
     def move(self, direction):
         if direction == 'l':
-            if self.xpos > 40:
+            if self.xpos > 40 or (self.multiplayer==1 and self.xpos < WIDTH):
                 self.xpos -= 20
-        elif direction == 'r':
+        elif direction == 'r' or (self.multiplayer==2 and self.xpos > WIDTH):
             if self.xpos < WIDTH - 40:
                 self.xpos += 20
         elif direction == 'u':
