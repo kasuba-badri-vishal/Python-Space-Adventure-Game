@@ -25,7 +25,7 @@ def multi_player_game(CANVAS, game_bg):
     multi_player1 = Player(xpos=10, ypos=30, imagepath=os.path.join(PLAYER_IMAGES,'multi_player1.png'), multiplayer=1)
     multi_player2 = Player(xpos=7*WIDTH/8, ypos=HEIGHT/2, imagepath=os.path.join(PLAYER_IMAGES,'multi_player2.png'), multiplayer=2)
 
-
+    ### Rendering Text on to the screen
     font1 = pygame.font.Font(ALBA_FONT, 40)
     line1 = font1.render("Don't Mess with the Fire", False, (255, 255, 255))
     line2 = font1.render('When Fire fires the fire', False, (255, 255, 255))
@@ -45,11 +45,13 @@ def multi_player_game(CANVAS, game_bg):
     # Initializing variables that would be used
     threshold_health = -300
 
+    ### Recurring loop to update the window for each frame interval
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return "end"
 
+            ### Series of events with press of key board keys
             if(event.type == pygame.KEYDOWN):
                 if(event.key == pygame.K_ESCAPE):
                     return "end"
@@ -68,6 +70,8 @@ def multi_player_game(CANVAS, game_bg):
 
         tick = pygame.time.get_ticks()
         
+
+        ### Printing rendered text on to the screen
         CANVAS.blit(game_bg, (0, 0))
         if(tick<4000):
             CANVAS.blit(line9, ((400, HEIGHT / 10)))
@@ -121,10 +125,12 @@ def multi_player_game(CANVAS, game_bg):
             return 1
 
 
+        ### Updating the bullet arrays
         bull_arr_player1 = check_bullet_status(bull_arr_player1, CANVAS, direction="r")
         bull_arr_player2 = check_bullet_status(bull_arr_player2, CANVAS, direction="l")
 
         
+        ### Updating the player's and bullet array information
         multi_player1, bull_arr_player2 = update_player_health(multi_player1, bull_arr_player2)
         multi_player2, bull_arr_player1 = update_player_health(multi_player2, bull_arr_player1)
 
@@ -254,7 +260,7 @@ def single_player_game(CANVAS, bg_image):
             phase = 'enemy2'
 
 
-
+        ### Logic TO Render and handle Enemy1 objects 
         if phase == 'enemy1':
 
             if (flag == 1) or (timer > 620 and flag == 3):
@@ -277,6 +283,7 @@ def single_player_game(CANVAS, bg_image):
 
             timer += 1
 
+        ### TO Render and handle Enemy2 objects 
         elif phase == 'enemy2':
 
             if enemy2flag == 0:
@@ -289,6 +296,8 @@ def single_player_game(CANVAS, bg_image):
 
         player1.display(screen=CANVAS)
 
+
+        ### Movement of Player 1 on the Screen
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             player1.move(direction='l')
@@ -311,9 +320,10 @@ def single_player_game(CANVAS, bg_image):
             if(enemy.isalive == False):
                 return "Enemies"
 
+
+        ### ENemy 2 logic to upgrade the power provess as his health is deteroiting with Player's bullets
         for enemy in enemy_arr2:
 
-            
             if enemy.life > 300:
                 enemy.move(direction='d')
 
@@ -357,6 +367,8 @@ def single_player_game(CANVAS, bg_image):
             if(enemy.isalive == False):
                 return "Boss"
 
+
+        ### Updating the bullets array list and the enemy's health condition
         for b in bull_arr:
             for e in enemy_arr:
                 if len(bull_arr) > 0 and len(enemy_arr) > 0:
@@ -396,6 +408,8 @@ def single_player_game(CANVAS, bg_image):
                         if playerBullet in bull_arr:
                             bull_arr.remove(playerBullet)
 
+
+        ### Updating the enemy's bullet array list
         for enemyBulllet in bull_arr_enemy:
 
             hcon1 = enemyBulllet.centerx + enemyBulllet.surface.get_width() / 2 > player1.centerx - player1.surface.get_width() / 2 + 30
